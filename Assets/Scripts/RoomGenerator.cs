@@ -266,6 +266,8 @@ public class RoomGenerator : MonoBehaviour
                 m_tileMap.SetTile(Position, null);
                 Position = new Vector3Int(m_doorLocations[d].x + 1, m_doorLocations[d].y + 1, 0);
                 m_tileMap.SetTile(Position, null);
+
+
             }
 
             // Check whether door location is on top edge
