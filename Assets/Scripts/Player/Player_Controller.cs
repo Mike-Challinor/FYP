@@ -9,46 +9,73 @@ public class Player_Controller : MonoBehaviour
     [SerializeField] private float m_attackTimer = 0.2f;
     [SerializeField] private GameObject m_projectilePrefab;
     [SerializeField] private GameObject m_firePoint;
+    [SerializeField] private GameObject m_playerCameraPrefab;
 
+    private bool isCollidingWithWall = false;
     private float m_maxHealth = 100.0f;
     private Health_Component m_healthComponent;
+    private Rigidbody2D m_RB;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        // Initialise player camera
-        m_playerCam = GameObject.FindGameObjectWithTag("MainCamera"); // Find the main camera game object
-        m_playerCam.transform.SetParent(m_player.transform); // Set the player as the cameras new parent
-        m_playerCam.transform.localPosition = new Vector3(0, 0, -11); ; // Reset locallocal position
-
-        //Initialise health component
+        Vector3 cameraPosition = new Vector3(0, 0, -10);
+        SpawnPlayerCamera(cameraPosition, transform.rotation);
         m_healthComponent = GetComponent<Health_Component>();
         m_healthComponent.InitHealth(m_maxHealth);
+        m_RB = GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
+        if (IsMouseWithinScreen() && !isCollidingWithWall)
+        {
+            FaceMousePos();
+        }
+    }
 
+    // Detect collision with walls
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        Debug.Log("Collision!");
+
+        if (collision.gameObject.CompareTag("Walls"))
+        {
+            Debug.Log("Player Collided with wall!");
+            isCollidingWithWall = true;
+        }
+    }
+
+    // Detect when collision ends
+    void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Walls"))
+        {
+            isCollidingWithWall = false;
+        }
     }
 
     public void InitiateAttack()
     {
-        m_isAttacking = true;
-        StartCoroutine(Attack());
+        if (IsMouseWithinScreen())
+        {
+            m_isAttacking = true;
+            StartCoroutine(Attack());
+        }
     }
 
     private IEnumerator Attack()
     {
-        while(m_isAttacking)
+        while (m_isAttacking)
         {
-            // Spawn projectile here
             GameObject projectile = Instantiate(m_projectilePrefab, m_firePoint.transform.position, m_firePoint.transform.rotation);
 
-            // Wait for attack timer before spawning another projectile
+            Vector3 mousePos = m_playerCam.GetComponent<Camera>().ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Mathf.Abs(m_playerCam.transform.position.z)));
+            Vector2 fireDirection = (mousePos - m_firePoint.transform.position).normalized;
+
+            projectile.GetComponent<Projectile>().SetDirection(fireDirection);
+
             yield return StartCoroutine(AttackTimer());
         }
-        
     }
 
     private IEnumerator AttackTimer()
@@ -59,5 +86,38 @@ public class Player_Controller : MonoBehaviour
     public void EndAttack()
     {
         m_isAttacking = false;
-    }    
+    }
+
+    private void FaceMousePos()
+    {
+        if (!isCollidingWithWall)
+        {
+            Vector3 mousePos = m_playerCam.GetComponent<Camera>().ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Mathf.Abs(m_playerCam.transform.position.z)));
+            mousePos.z = 0;
+            Vector3 direction = (mousePos - transform.position).normalized;
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0, 0, angle - 88f);
+        }
+    }
+
+    private bool IsMouseWithinScreen()
+    {
+        Vector3 mousePos = Input.mousePosition;
+        return mousePos.x >= 0 && mousePos.x <= Screen.width && mousePos.y >= 0 && mousePos.y <= Screen.height;
+    }
+
+    private void SpawnPlayerCamera(Vector3 spawnPosition, Quaternion spawnRotation)
+    {
+        GameObject playerCamera = Instantiate(m_playerCameraPrefab, spawnPosition, spawnRotation);
+
+        if (playerCamera != null)
+        {
+            m_playerCam = playerCamera;
+            playerCamera.GetComponent<FollowCamera>().InitCamera(this.transform);
+        }
+        else
+        {
+            Debug.LogError("ERROR::PLAYERNETWORK::SPAWNPLAYERCAMERA:: Player camera is null");
+        }
+    }
 }

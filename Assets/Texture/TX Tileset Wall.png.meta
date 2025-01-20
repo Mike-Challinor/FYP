@@ -464,8 +464,8 @@ TextureImporter:
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       physicsShape:
-      - - {x: 16, y: -2}
-        - {x: -16, y: -2}
+      - - {x: 16, y: 16}
+        - {x: -16, y: 16}
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       tessellationDetail: 0
@@ -494,8 +494,8 @@ TextureImporter:
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       physicsShape:
-      - - {x: 16, y: -2}
-        - {x: -16, y: -2}
+      - - {x: 16, y: 16}
+        - {x: -16, y: 16}
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       tessellationDetail: 0
@@ -524,8 +524,8 @@ TextureImporter:
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       physicsShape:
-      - - {x: 16, y: -2}
-        - {x: -16, y: -2}
+      - - {x: 16, y: 16}
+        - {x: -16, y: 16}
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       tessellationDetail: 0
@@ -750,8 +750,8 @@ TextureImporter:
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       physicsShape:
-      - - {x: 16, y: -2}
-        - {x: -16, y: -2}
+      - - {x: 16, y: 16}
+        - {x: -16, y: 16}
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       tessellationDetail: 0
@@ -780,8 +780,8 @@ TextureImporter:
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       physicsShape:
-      - - {x: 16, y: -2}
-        - {x: -16, y: -2}
+      - - {x: 16, y: 16}
+        - {x: -16, y: 16}
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       tessellationDetail: 0
@@ -810,8 +810,8 @@ TextureImporter:
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       physicsShape:
-      - - {x: 16, y: -2}
-        - {x: -16, y: -2}
+      - - {x: 16, y: 16}
+        - {x: -16, y: 16}
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       tessellationDetail: 0
@@ -1088,8 +1088,8 @@ TextureImporter:
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       physicsShape:
-      - - {x: 16, y: -2}
-        - {x: -16, y: -2}
+      - - {x: 16, y: 16}
+        - {x: -16, y: 16}
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       tessellationDetail: 0
@@ -1118,8 +1118,8 @@ TextureImporter:
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       physicsShape:
-      - - {x: 16, y: -2}
-        - {x: -16, y: -2}
+      - - {x: 16, y: 16}
+        - {x: -16, y: 16}
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       tessellationDetail: 0
@@ -1148,8 +1148,8 @@ TextureImporter:
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       physicsShape:
-      - - {x: 16, y: -2}
-        - {x: -16, y: -2}
+      - - {x: 16, y: 16}
+        - {x: -16, y: 16}
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       tessellationDetail: 0
@@ -1178,8 +1178,8 @@ TextureImporter:
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       physicsShape:
-      - - {x: 16, y: -2}
-        - {x: -16, y: -2}
+      - - {x: 16, y: 16}
+        - {x: -16, y: 16}
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       tessellationDetail: 0
@@ -1296,8 +1296,8 @@ TextureImporter:
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       physicsShape:
-      - - {x: 16, y: -2}
-        - {x: -16, y: -2}
+      - - {x: 16, y: 16}
+        - {x: -16, y: 16}
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       tessellationDetail: 0
@@ -1348,8 +1348,8 @@ TextureImporter:
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       physicsShape:
-      - - {x: 16, y: -2}
-        - {x: -16, y: -2}
+      - - {x: 16, y: 16}
+        - {x: -16, y: 16}
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       tessellationDetail: 0
@@ -1400,8 +1400,8 @@ TextureImporter:
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       physicsShape:
-      - - {x: 16, y: -2}
-        - {x: -16, y: -2}
+      - - {x: 16, y: 16}
+        - {x: -16, y: 16}
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       tessellationDetail: 0
@@ -1452,8 +1452,8 @@ TextureImporter:
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       physicsShape:
-      - - {x: 16, y: -2}
-        - {x: -16, y: -2}
+      - - {x: 16, y: 16}
+        - {x: -16, y: 16}
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       tessellationDetail: 0
@@ -1794,8 +1794,8 @@ TextureImporter:
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       physicsShape:
-      - - {x: 16, y: -2}
-        - {x: -16, y: -2}
+      - - {x: 16, y: 16}
+        - {x: -16, y: 16}
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       tessellationDetail: 0
@@ -1846,8 +1846,8 @@ TextureImporter:
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       physicsShape:
-      - - {x: 16, y: -2}
-        - {x: -16, y: -2}
+      - - {x: 16, y: 16}
+        - {x: -16, y: 16}
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       tessellationDetail: 0
@@ -1876,8 +1876,8 @@ TextureImporter:
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       physicsShape:
-      - - {x: 16, y: -2}
-        - {x: -16, y: -2}
+      - - {x: 16, y: 16}
+        - {x: -16, y: 16}
         - {x: -16, y: -16}
         - {x: 16, y: -16}
       tessellationDetail: 0

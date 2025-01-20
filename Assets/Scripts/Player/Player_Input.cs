@@ -64,15 +64,13 @@ public class Player_Input : MonoBehaviour
 
     private void MovePlayer()
     {
-        //Check to see if moving left or right
-        if ((m_moveInput.x < 0 && m_isFacingRight) || (m_moveInput.x > 0 && !m_isFacingRight))
+        // Cancel all movement if there is no input
+        if (m_moveInput.x == 0 && m_moveInput.y == 0)
         {
-            FlipSprite();
+            m_RB.linearVelocity = Vector2.zero;
         }
 
         m_RB.linearVelocity = m_moveInput * m_moveSpeed;
-
-
     }
 
     private void InitiateAttack(InputAction.CallbackContext ctx)
@@ -85,25 +83,6 @@ public class Player_Input : MonoBehaviour
     {
         Debug.Log("End Attack!");
         m_playerController.EndAttack();
-    }
-
-    private void FlipSprite()
-    {
-        m_isFacingRight = !m_isFacingRight;
-        m_playerSprite.flipX = !m_playerSprite.flipX;
-
-        if (m_isFacingRight)
-        {
-            // Set the firepoint to right of the player
-            m_firePoint.transform.localPosition = new Vector3(Mathf.Abs(m_firePointLocalPosition.x), m_firePointLocalPosition.y, 0);
-        }
-
-        else
-        {
-            // Set the firepoint to right of the player
-            m_firePoint.transform.localPosition = new Vector3(-Mathf.Abs(m_firePointLocalPosition.x), m_firePointLocalPosition.y, 0);
-        }
-
     }
 
 }
