@@ -46,6 +46,8 @@ public class RoomGenerator : MonoBehaviour
     public bool m_isDrawing = false;
     public bool m_useTimer = true;
 
+    private int m_distanceBetweenRooms;
+
     public void GenerateRoom(int width, int height, int xLocation, int yLocation, int numberOfDoors, List<Vector3Int> doorLocations, List<Vector3Int> wallLocations)
     {
         // Ensure the game is running
@@ -206,6 +208,8 @@ public class RoomGenerator : MonoBehaviour
                 m_tileMap.SetTile(Position, null);
                 Position = new Vector3Int(m_doorLocations[d].x, m_doorLocations[d].y + 1, 0);
                 m_tileMap.SetTile(Position, null);
+
+                DrawConnectingWalls(m_doorLocations[d], 0);
             }
 
             // Check whether door location is on right edge
@@ -234,6 +238,8 @@ public class RoomGenerator : MonoBehaviour
                 m_tileMap.SetTile(Position, null);
                 Position = new Vector3Int(m_doorLocations[d].x, m_doorLocations[d].y + 1, 0);
                 m_tileMap.SetTile(Position, null);
+
+                DrawConnectingWalls(m_doorLocations[d], 1);
             }
 
             // Check whether door location is on bottom edge
@@ -241,7 +247,7 @@ public class RoomGenerator : MonoBehaviour
             {
                 // Get first position of the doorway
                 Vector3Int Position = new Vector3Int(m_doorLocations[d].x - 1, m_doorLocations[d].y + 1, 0);
-                m_tileMap.SetTile(Position, m_verticalDoorwayTopLeft);
+                m_tileMap.SetTile(Position, m_topRightCornerWall);
 
                 // Second position of doorway
                 Position = new Vector3Int(m_doorLocations[d].x - 1, m_doorLocations[d].y, 0);
@@ -250,7 +256,7 @@ public class RoomGenerator : MonoBehaviour
 
                 // Third position of doorway
                 Position = new Vector3Int(m_doorLocations[d].x + 2, m_doorLocations[d].y + 1, 0);
-                m_tileMap.SetTile(Position, m_verticalDoorwayTopRight);
+                m_tileMap.SetTile(Position, m_topLeftCornerWall);
 
                 // Fourth position of doorway
                 Position = new Vector3Int(m_doorLocations[d].x + 2, m_doorLocations[d].y, 0);
@@ -266,6 +272,9 @@ public class RoomGenerator : MonoBehaviour
                 m_tileMap.SetTile(Position, null);
                 Position = new Vector3Int(m_doorLocations[d].x + 1, m_doorLocations[d].y + 1, 0);
                 m_tileMap.SetTile(Position, null);
+
+                DrawConnectingWalls(m_doorLocations[d], 2);
+
             }
 
             // Check whether door location is on top edge
@@ -309,13 +318,85 @@ public class RoomGenerator : MonoBehaviour
                 m_tileMap.SetTile(Position, null);
                 Position = new Vector3Int(m_doorLocations[d].x - 1, m_doorLocations[d].y - 1, 0);
                 m_tileMap.SetTile(Position, null);
+
+                DrawConnectingWalls(m_doorLocations[d], 3);
             }
 
             if (m_useTimer) { yield return StartCoroutine(DrawTimer()); }
 
         }
 
+        
+
         m_isDrawing = false;
+    }
+
+    private void DrawConnectingWalls(Vector3Int doorLocation, int direction)
+    {
+        Vector3Int Position = new Vector3Int(doorLocation.x, doorLocation.y, 0);
+
+        switch (direction)
+        {
+            case 0: // Left direction
+
+                for (int i = 1; i <= m_distanceBetweenRooms; i++)
+                {
+                    //Top walls
+                    var chosenWall = m_horizontalWallsTopUpper[Random.Range(0, m_horizontalWallsTopUpper.Length)];
+                    Position = new Vector3Int(doorLocation.x - i, doorLocation.y - 1, 0); // Bottom wall (top)
+                    m_tileMap.SetTile(Position, chosenWall);
+                    Position = new Vector3Int(doorLocation.x - i, doorLocation.y + 3, 0); // Top wall (top)
+                    m_tileMap.SetTile(Position, chosenWall);
+
+                    //Bottom walls
+                    chosenWall = m_horizontalWallsBottom[Random.Range(0, m_horizontalWallsBottom.Length)];
+                    Position = new Vector3Int(doorLocation.x - i, doorLocation.y - 2, 0); // Bottom wall (bottom)
+                    m_tileMap.SetTile(Position, chosenWall);
+                    Position = new Vector3Int(doorLocation.x - i, doorLocation.y + 2, 0); // Top wall (bottom)
+                    m_tileMap.SetTile(Position, chosenWall);
+                    
+                }
+                break;
+
+            case 1: // Right direction
+
+                for (int i = 1; i <= m_distanceBetweenRooms; i++)
+                {
+                    //Top walls
+                    var chosenWall = m_horizontalWallsTopUpper[Random.Range(0, m_horizontalWallsTopUpper.Length)];
+                    Position = new Vector3Int(doorLocation.x + i, doorLocation.y - 1, 0); // Bottom wall (top)
+                    m_tileMap.SetTile(Position, chosenWall);
+                    Position = new Vector3Int(doorLocation.x + i, doorLocation.y + 3, 0); // Bottom wall (top)
+                    m_tileMap.SetTile(Position, chosenWall);
+
+                    //Bottom walls
+                    chosenWall = m_horizontalWallsBottom[Random.Range(0, m_horizontalWallsBottom.Length)];
+                    Position = new Vector3Int(doorLocation.x + i, doorLocation.y - 2, 0); // Top wall (bottom)
+                    m_tileMap.SetTile(Position, chosenWall);
+                    Position = new Vector3Int(doorLocation.x + i, doorLocation.y + 2, 0); // Top wall (bottom
+                    m_tileMap.SetTile(Position, chosenWall);
+                }
+                break;
+
+            case 2: // Downwards direction
+                for (int i = 1; i <= m_distanceBetweenRooms; i++)
+                {
+                    var chosenWall = m_verticalWallsRight[Random.Range(0, m_verticalWallsRight.Length)];
+                    Position = new Vector3Int(doorLocation.x - 1, doorLocation.y - i, 0); // Left wall (top)
+                    m_tileMap.SetTile(Position, chosenWall);
+                    Position = new Vector3Int(doorLocation.x - 1, doorLocation.y - i - 1, 0); // Left wall (bottom)
+                    m_tileMap.SetTile(Position, chosenWall);
+
+                    chosenWall = m_verticalWallsLeft[Random.Range(0, m_verticalWallsLeft.Length)];
+                    Position = new Vector3Int(doorLocation.x + 2, doorLocation.y - i, 0); // Right wall (top)
+                    m_tileMap.SetTile(Position, chosenWall);
+                    chosenWall = m_verticalWallsLeft[Random.Range(0, m_verticalWallsLeft.Length)];
+                    Position = new Vector3Int(doorLocation.x + 2, doorLocation.y - i - 1, 0); // Right wall (bottom)
+                    m_tileMap.SetTile(Position, chosenWall);
+                }
+                break;
+        }
+        
     }
 
     private IEnumerator DrawTimer()
@@ -326,5 +407,10 @@ public class RoomGenerator : MonoBehaviour
     public void SetUseTimer(bool usetimer)
     {
         m_useTimer = usetimer;
+    }
+
+    public void SetDistanceBetweenRooms(int distanceBetweenRooms)
+    {
+        m_distanceBetweenRooms = distanceBetweenRooms;
     }
 }

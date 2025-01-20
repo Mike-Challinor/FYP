@@ -5,16 +5,17 @@ using System.Collections.Generic;
 public class DungeonGenerator : MonoBehaviour
 {
 
-    public List<Room> rooms; // List to store all generated rooms
-    [SerializeField] public List<Vector3Int> roomLocationsToGenerate; // List to store all of the room locations that still need to be generated
-    [SerializeField] bool isRightPath = true; // Bool for handling if it is a right or left path
-    [SerializeField] GameObject numberPrefab;
-    [SerializeField] bool m_useTimer = true;
+    private List<Room> rooms; // List to store all generated rooms
+    [SerializeField] private List<Vector3Int> roomLocationsToGenerate; // List to store all of the room locations that still need to be generated
+    [SerializeField] private bool isRightPath = true; // Bool for handling if it is a right or left path
+    [SerializeField] private GameObject numberPrefab;
+    [SerializeField] private bool m_useTimer = true;
 
-    public int m_numberOfRooms; // The total number of rooms
-    public int m_maxNumberOfRooms = 3; // The max amount of rooms
-    public int m_maxNumberOfDoors = 3; // The max amount of doors
+    [SerializeField] private int m_numberOfRooms; // The total number of rooms
+    [SerializeField] private int m_maxNumberOfRooms = 3; // The max amount of rooms
+    [SerializeField] private int m_distanceBetweenRooms = 2; // The distance between the rooms
 
+    private const int m_maxNumberOfDoors = 3; // The max amount of doors
     public GameObject m_roomGenerator; // The room generator game object
     public RoomGenerator m_roomGeneratorScript; // The room generatior script
 
@@ -132,8 +133,8 @@ public class DungeonGenerator : MonoBehaviour
 
                 if (rooms.Count == 1) // Location for the first generated room
                 {
-                    xLocation = 11;
-                    yLocation = -8;
+                    xLocation = rooms[0].xLocation + rooms[0].width + m_distanceBetweenRooms;
+                    yLocation = rooms[0].yLocation;
                     entranceDirection = Direction.East;
                 }
 
@@ -468,7 +469,7 @@ public class DungeonGenerator : MonoBehaviour
                                 case 0: // Top wall
 
                                     doorPosition = new Vector3Int(xLocation + roomWidth / 2, yLocation + roomHeight, 0); // Middle of the top wall
-                                    roomPosition = new Vector3Int(xLocation, yLocation + roomHeight + 2, 0);
+                                    roomPosition = new Vector3Int(xLocation, yLocation + roomHeight + m_distanceBetweenRooms, 0);
 
                                     if (!roomLocationsToGenerate.Contains(roomPosition))
                                     {
@@ -484,7 +485,7 @@ public class DungeonGenerator : MonoBehaviour
                                 case 1: // Bottom wall
 
                                     doorPosition = new Vector3Int(xLocation + roomWidth / 2, yLocation, 0); // Middle of the bottom wall
-                                    roomPosition = new Vector3Int(xLocation, yLocation - roomHeight - 2, 0);
+                                    roomPosition = new Vector3Int(xLocation, yLocation - roomHeight - m_distanceBetweenRooms, 0);
 
                                     if (!roomLocationsToGenerate.Contains(roomPosition))
                                     {
@@ -500,7 +501,7 @@ public class DungeonGenerator : MonoBehaviour
                                 case 2: // Left wall
 
                                     doorPosition = new Vector3Int(xLocation, yLocation + roomHeight / 2, 0); // Middle of the left wall
-                                    roomPosition = new Vector3Int(xLocation - roomWidth - 2, yLocation, 0);
+                                    roomPosition = new Vector3Int(xLocation - roomWidth - m_distanceBetweenRooms, yLocation, 0);
 
                                     if (!roomLocationsToGenerate.Contains(roomPosition))
                                     {
@@ -516,7 +517,7 @@ public class DungeonGenerator : MonoBehaviour
                                 case 3: // Right wall
 
                                     doorPosition = new Vector3Int(xLocation + roomWidth, yLocation + roomHeight / 2, 0); // Middle of the right wall
-                                    roomPosition = new Vector3Int(xLocation + roomWidth + 2, yLocation, 0);
+                                    roomPosition = new Vector3Int(xLocation + roomWidth + m_distanceBetweenRooms, yLocation, 0);
 
                                     if (!roomLocationsToGenerate.Contains(roomPosition))
                                     {
@@ -593,8 +594,10 @@ public class DungeonGenerator : MonoBehaviour
 
 
             // Generate the room visually
-            m_roomGeneratorScript.SetUseTimer(m_useTimer);
-            m_roomGeneratorScript.GenerateRoom(roomWidth, roomHeight, xLocation, yLocation, numberOfDoors, doorLocations, wallLocations);
+            m_roomGeneratorScript.SetUseTimer(m_useTimer); // Set whether to use a timer when drawing on the room generator
+            m_roomGeneratorScript.SetDistanceBetweenRooms(m_distanceBetweenRooms); // Set the distance between the rooms on the room generator
+            m_roomGeneratorScript.GenerateRoom(roomWidth, roomHeight, xLocation, yLocation, numberOfDoors, doorLocations, wallLocations); // Generate the room
+
             // Wait until room drawing is complete
             while (m_roomGeneratorScript.m_isDrawing)
             {
@@ -629,10 +632,10 @@ public class DungeonGenerator : MonoBehaviour
 
         foreach (Room room in rooms)
         {
-            if (xPos == room.xLocation && yPos + height + 2 == room.yLocation) availableDirections.Remove(0); // Top
-            if (xPos == room.xLocation && yPos - height - 2 == room.yLocation) availableDirections.Remove(1); // Bottom
-            if (xPos - width - 2 == room.xLocation && yPos == room.yLocation) availableDirections.Remove(2); // Left
-            if (xPos + width + 2 == room.xLocation && yPos == room.yLocation) availableDirections.Remove(3); // Right
+            if (xPos == room.xLocation && yPos + height + m_distanceBetweenRooms == room.yLocation) availableDirections.Remove(0); // Top
+            if (xPos == room.xLocation && yPos - height - m_distanceBetweenRooms == room.yLocation) availableDirections.Remove(1); // Bottom
+            if (xPos - width - m_distanceBetweenRooms == room.xLocation && yPos == room.yLocation) availableDirections.Remove(2); // Left
+            if (xPos + width + m_distanceBetweenRooms == room.xLocation && yPos == room.yLocation) availableDirections.Remove(3); // Right
         }
 
         if (isRightPath) // Remove the possibility of going left
@@ -649,4 +652,11 @@ public class DungeonGenerator : MonoBehaviour
         return new List<int>(availableDirections);
     }
 
+    public int GetDistanceBetweenRooms()
+    {
+        return m_distanceBetweenRooms;
+    }
+
 }
+
+
