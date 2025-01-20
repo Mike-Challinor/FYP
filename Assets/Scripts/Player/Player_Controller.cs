@@ -5,8 +5,9 @@ public class Player_Controller : MonoBehaviour
 {
     [SerializeField] private GameObject m_playerCam;
     [SerializeField] private GameObject m_player;
-    [SerializeField] private bool m_isAttacking;
-    [SerializeField] private float m_attackTimer = 0.2f;
+    [SerializeField] private bool m_isAttacking = false;
+    [SerializeField] private bool m_canAttack = true;
+    [SerializeField] private float m_attackTimer = 0.5f;
     [SerializeField] private GameObject m_projectilePrefab;
     [SerializeField] private GameObject m_firePoint;
     [SerializeField] private GameObject m_playerCameraPrefab;
@@ -74,6 +75,8 @@ public class Player_Controller : MonoBehaviour
 
             projectile.GetComponent<Projectile>().SetDirection(fireDirection);
 
+            m_canAttack = false;
+
             yield return StartCoroutine(AttackTimer());
         }
     }
@@ -81,11 +84,17 @@ public class Player_Controller : MonoBehaviour
     private IEnumerator AttackTimer()
     {
         yield return new WaitForSeconds(m_attackTimer);
+        m_canAttack = true;
     }
 
     public void EndAttack()
     {
         m_isAttacking = false;
+    }
+
+    public bool GetCanAttack()
+    {
+        return m_canAttack;
     }
 
     private void FaceMousePos()

@@ -75,8 +75,11 @@ public class Player_Input : MonoBehaviour
 
     private void InitiateAttack(InputAction.CallbackContext ctx)
     {
-        Debug.Log("Initiate Attack!");
-        m_playerController.InitiateAttack();
+        if (m_playerController.GetCanAttack()) // Initiate attack if player can attack
+        {
+            Debug.Log("Initiate Attack!");
+            m_playerController.InitiateAttack();
+        }        
     }
 
     private void EndAttack(InputAction.CallbackContext ctx)
