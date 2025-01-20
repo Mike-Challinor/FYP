@@ -1,0 +1,61 @@
+using UnityEngine;
+using System.Collections;
+
+public class Projectile : MonoBehaviour
+{
+    [SerializeField] private float m_projectileSpeed = 12f;
+    [SerializeField] private float m_damage = 40f;
+    [SerializeField] private float m_lifespan = 4f;
+    private Rigidbody2D m_RB;
+
+    void Start()
+    {
+        DestroyProjectileAfterLifespan();
+        m_RB = GetComponent<Rigidbody2D>();
+        m_RB.bodyType = RigidbodyType2D.Kinematic;
+    }
+
+    private void Update()
+    {
+        MoveProjectile();
+    }
+
+    // Detect collision with walls
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        Debug.Log("Collision!");
+
+        if (collision.gameObject.CompareTag("Walls"))
+        {
+            Debug.Log("Projectile collided with wall!");
+            DestroyProjectile();
+        }
+    }
+
+    public void SetDirection(Vector2 fireDirection)
+    {
+        float angle = Mathf.Atan2(fireDirection.y, fireDirection.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0, 0, angle - 90f);
+    }
+
+    private void MoveProjectile()
+    {
+        m_RB.linearVelocity = transform.up * m_projectileSpeed;
+    }
+
+    void DestroyProjectileAfterLifespan()
+    {
+        StartCoroutine(LifespanTimer());
+    }
+
+    void DestroyProjectile()
+    {
+        Destroy(gameObject);
+    }
+
+    IEnumerator LifespanTimer()
+    {
+        yield return new WaitForSeconds(m_lifespan);
+        DestroyProjectile();
+    }
+}
