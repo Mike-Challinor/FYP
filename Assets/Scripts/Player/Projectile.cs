@@ -30,6 +30,14 @@ public class Projectile : MonoBehaviour
             Debug.Log("Projectile collided with wall!");
             DestroyProjectile();
         }
+
+        else if (collision.gameObject.CompareTag("Enemy"))
+        {
+            Debug.Log("Projectile collided with Enemy!");
+            DestroyProjectile();
+            Health_Component healthComponent = collision.gameObject.GetComponentInParent<Health_Component>();
+            healthComponent.RemoveHealth(m_damage);
+        }
     }
 
     public void SetDirection(Vector2 fireDirection)

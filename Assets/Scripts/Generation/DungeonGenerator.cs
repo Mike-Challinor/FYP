@@ -1,4 +1,5 @@
 using UnityEngine;
+using Unity.AI.Navigation;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -19,10 +20,31 @@ public class DungeonGenerator : MonoBehaviour
     public GameObject m_roomGenerator; // The room generator game object
     public RoomGenerator m_roomGeneratorScript; // The room generatior script
 
+    [SerializeField] private GameObject m_navMesh;
+    public NavMeshSurface m_navMeshSurface;
+
     private bool m_isASideRoom = false;
+
+    private void Awake()
+    {
+        if (m_navMesh == null)
+        {
+            Debug.LogError("NavMesh is not assigned in awake!");
+            return;
+        }
+
+        m_navMeshSurface = m_navMesh.GetComponent<NavMeshSurface>();
+
+        // If no NavMeshSurface script is found, log an error
+        if (m_navMeshSurface == null)
+        {
+            Debug.LogError("NavMeshSurface script is missing!");
+        }
+    }
 
     private void Start()
     {
+        // Initialise room generator script
         m_roomGeneratorScript = m_roomGenerator.GetComponent<RoomGenerator>();
 
         // Initialise Rooms list
@@ -39,6 +61,7 @@ public class DungeonGenerator : MonoBehaviour
 
         // Set for the start room
         AddRoom(19, 12, -10, -8, 1, doorLocations, wallLocations, 0, 0, false);
+
     }
 
 
@@ -612,8 +635,11 @@ public class DungeonGenerator : MonoBehaviour
                 GameObject spawnedNumber = Instantiate(numberPrefab, numberLoc, spawnRotation);
                 spawnedNumber.GetComponent<RoomNumberAssignment>().SetSprite(m_numberOfRooms - 1);
             }
-            
+
         }
+
+        // Rebake nav mesh
+        m_navMeshSurface.BuildNavMesh();
     }
 
 

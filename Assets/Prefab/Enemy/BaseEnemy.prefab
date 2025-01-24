@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4816145422742972214}
   - component: {fileID: 5668594736490060433}
   - component: {fileID: 1235976762399372015}
+  - component: {fileID: -6814473434120718334}
   m_Layer: 0
   m_Name: BaseEnemy
   m_TagString: Enemy
@@ -30,10 +31,11 @@ Transform:
   m_GameObject: {fileID: 3962862433456343458}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.15214978, y: 2.0957305, z: 0.049349908}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2961954559579337499}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &8225249689754720148
@@ -125,8 +127,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.06076151, y: -0.25033712}
-  m_Size: {x: 0.601264, y: 0.93599224}
+  m_Offset: {x: 0.020743757, y: -0.036123633}
+  m_Size: {x: 0.6812995, y: 1.3644192}
   m_Direction: 0
 --- !u!50 &4816145422742972214
 Rigidbody2D:
@@ -167,6 +169,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05ed4826210b08343b6d21cec56d4f61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_moveSpeed: 1
+  m_attackDamage: 5
+  m_attackRange: 2
+  m_attackDuration: 1
+  m_attackCooldown: 2
+  m_aggroRange: 10
+  m_target: {fileID: 0}
+  m_attackCollider: {fileID: 6833623235297209859}
+  m_isAttacking: 0
 --- !u!114 &1235976762399372015
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -181,3 +192,103 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_maxHealth: 150
   m_currentHealth: 0
+--- !u!195 &-6814473434120718334
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3962862433456343458}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.46833333
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 1.4366666
+  m_BaseOffset: 0.7183333
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
+--- !u!1 &4146132488928721237
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2961954559579337499}
+  - component: {fileID: 6833623235297209859}
+  m_Layer: 0
+  m_Name: Attack Collider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2961954559579337499
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4146132488928721237}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1978463713392118518}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &6833623235297209859
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4146132488928721237}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -0.2955172, y: -0.07500435}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.5769754, y: 0.4959705}
+  m_EdgeRadius: 0

@@ -187,6 +187,7 @@ MonoBehaviour:
   m_playerCam: {fileID: 0}
   m_player: {fileID: 7854201740610055996}
   m_isAttacking: 0
+  m_canAttack: 1
   m_attackTimer: 0.2
   m_projectilePrefab: {fileID: 2895648578078587408, guid: 6db9aacf448719644b41f3f6a4c59749, type: 3}
   m_firePoint: {fileID: 8605230666064312328}
