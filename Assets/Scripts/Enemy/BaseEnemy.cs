@@ -6,7 +6,7 @@ public class BaseEnemy : MonoBehaviour
 {
     [SerializeField] private float m_moveSpeed = 1f;
     [SerializeField] private float m_attackDamage = 5f;
-    [SerializeField] private float m_attackRange = 2f;
+    [SerializeField] private float m_attackRange = 3f;
     [SerializeField] private float m_attackDuration = 1f;
     [SerializeField] private float m_attackCooldown = 2f;
     [SerializeField] private float m_aggroRange = 3f;
