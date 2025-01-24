@@ -11,7 +11,6 @@ public class Player_Input : MonoBehaviour
     private Vector3 m_firePointLocalPosition;
 
     [SerializeField] private float m_moveSpeed = 5f;
-    [SerializeField] private bool m_isFacingRight = true;
     [SerializeField] private GameObject m_firePoint;
 
 

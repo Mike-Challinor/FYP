@@ -29,6 +29,7 @@ public class Health_Component : MonoBehaviour
         if (m_currentHealth - healthToRemove < 0) // Check to make sure health does not fall below 0
         {
             m_currentHealth = 0;
+            Death();
         }
 
         else
@@ -40,6 +41,12 @@ public class Health_Component : MonoBehaviour
     public float GetHealth()
     {
         return m_currentHealth;
+    }
+
+    // Function for despawning the enemy
+    private void Death()
+    {
+        Destroy(gameObject);
     }
 
 
