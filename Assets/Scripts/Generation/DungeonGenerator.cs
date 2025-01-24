@@ -1,5 +1,4 @@
 using UnityEngine;
-using Unity.AI.Navigation;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -21,7 +20,7 @@ public class DungeonGenerator : MonoBehaviour
     public RoomGenerator m_roomGeneratorScript; // The room generatior script
 
     [SerializeField] private GameObject m_navMesh;
-    public NavMeshSurface m_navMeshSurface;
+    public NavMeshPlus.Components.NavMeshSurface m_navMeshSurface;
 
     private bool m_isASideRoom = false;
 
@@ -33,7 +32,7 @@ public class DungeonGenerator : MonoBehaviour
             return;
         }
 
-        m_navMeshSurface = m_navMesh.GetComponent<NavMeshSurface>();
+        m_navMeshSurface = m_navMesh.GetComponent<NavMeshPlus.Components.NavMeshSurface>();
 
         // If no NavMeshSurface script is found, log an error
         if (m_navMeshSurface == null)
