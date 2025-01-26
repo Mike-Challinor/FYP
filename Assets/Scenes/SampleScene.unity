@@ -1737,13 +1737,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05a803a9b4513904bbfdd94c524a1826, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roomLocationsToGenerate: []
+  m_roomLocationsToGenerate: []
   isRightPath: 1
   numberPrefab: {fileID: 4712619134071791329, guid: f3f733bc6d0d956499625d9494e686a9, type: 3}
-  m_useTimer: 1
+  m_useTimer: 0
   m_numberOfRooms: 0
   m_maxNumberOfRooms: 10
   m_distanceBetweenRooms: 2
+  m_roomWidth: 19
+  m_roomHeight: 12
   m_roomGenerator: {fileID: 825580255}
   m_roomGeneratorScript: {fileID: 0}
   m_navMesh: {fileID: 1107330881}
