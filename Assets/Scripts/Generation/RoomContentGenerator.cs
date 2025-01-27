@@ -6,13 +6,15 @@ using System.Collections.Generic;
 public class RoomContentGenerator : MonoBehaviour
 {
     // Tilemap variable
-    public Tilemap m_propTileMap;
+    public Tilemap m_propTileMapNoCollision;
+    public Tilemap m_propTileMapCollision;
 
     // Tile variables
-    public Tile m_wellTile;
+    public Tile m_altarTile;
+    public TileBase[] m_altarTileArray;
 
     // Tile data settings
-    private TileData m_wellTileData;
+    private TileData m_altarTileData;
 
     // Room dimensions
     public int m_width;
@@ -37,9 +39,9 @@ public class RoomContentGenerator : MonoBehaviour
 
     private void Start()
     {
-        m_wellTileData = new TileData()
+        m_altarTileData = new TileData()
         {
-            tile = m_wellTile,
+            tile = m_altarTile,
             height = 3,
             width = 3,
             minimumXLocation = 4,
@@ -79,8 +81,25 @@ public class RoomContentGenerator : MonoBehaviour
         Debug.Log($"XLocation is: {m_xLocation} YLocation is: {m_yLocation} Width is: {m_width} Height is: {m_height} Room halfway is: {m_width / 2} ");
 
         // Spawn the wells in the scene
-        if (m_wellTile != null)
+        if (m_altarTile != null)
         {
+            SetAltarLocations();
+
+            if (m_useTimer)
+            {
+                yield return StartCoroutine(DrawTimer());
+                m_isDrawing = false;
+            }
+
+            m_isDrawing = false;
+
+            Debug.Log("Ended drawing room content");
+        }
+
+
+
+    void SetAltarLocations()
+    {
             // Set the amount of wells in the scene between 1 and 4
             int amountToDraw = RandomNumberGenerator(1, 4);
             for (int i = 0; i < amountToDraw; i++)
@@ -90,8 +109,8 @@ public class RoomContentGenerator : MonoBehaviour
                 if (i == 0) // Place the first tile
                 {
                     position = new Vector3Int(
-                        RandomNumberGenerator(m_xLocation + m_wellTileData.minimumXLocation, m_xLocation + m_width - m_wellTileData.maximumXLocation),
-                        RandomNumberGenerator(m_yLocation + m_wellTileData.minimumYLocation, m_yLocation + m_height - m_wellTileData.maximumYLocation),
+                        RandomNumberGenerator(m_xLocation + m_altarTileData.minimumXLocation, m_xLocation + m_width - m_altarTileData.maximumXLocation),
+                        RandomNumberGenerator(m_yLocation + m_altarTileData.minimumYLocation, m_yLocation + m_height - m_altarTileData.maximumYLocation),
                         0
                     );
 
@@ -99,19 +118,19 @@ public class RoomContentGenerator : MonoBehaviour
                     while (position.x == m_xLocation + m_width / 2 || position.x == m_xLocation + m_width / 2 + 1 || position.x == m_xLocation + m_width / 2 + 2 || position.x == m_xLocation + m_width / 2 - 1 || position.x == m_xLocation + m_width / 2 - 2 || position.x == m_xLocation + m_width / 2 + 3)
                     {
                         Debug.Log($"X Position is {position.x} and the halfway point is: {position.x == position.x + m_width / 2}");
-                        position.x = RandomNumberGenerator(m_xLocation + m_wellTileData.minimumXLocation, m_xLocation + m_width - m_wellTileData.maximumXLocation);
+                        position.x = RandomNumberGenerator(m_xLocation + m_altarTileData.minimumXLocation, m_xLocation + m_width - m_altarTileData.maximumXLocation);
                     }
 
                     while (position.y == m_yLocation + m_height / 2 || position.y == m_yLocation + m_height / 2 - 1 || position.y == m_yLocation + m_height / 2 - 2 || position.y == m_yLocation + m_height / 2 + 1)
                     {
-                        position.y = RandomNumberGenerator(m_yLocation + m_wellTileData.minimumYLocation, m_yLocation + m_height - m_wellTileData.maximumYLocation);
+                        position.y = RandomNumberGenerator(m_yLocation + m_altarTileData.minimumYLocation, m_yLocation + m_height - m_altarTileData.maximumYLocation);
                     }
 
                     Debug.Log($"Placing first tile at: {position}");
-                    m_propTileMap.SetTile(position, m_wellTileData.tile);
+                    m_propTileMapNoCollision.SetTile(position, m_altarTileData.tile);
                     m_alterList.Add(position);
                 }
-                
+
                 else if (i == 1) // Place the second tile parallel horizontally
                 {
                     Vector3Int previousPos = m_alterList[m_alterList.Count - 1];
@@ -134,7 +153,7 @@ public class RoomContentGenerator : MonoBehaviour
                     if (IsPositionValid(position))
                     {
                         Debug.Log($"Placing second tile at: {position}");
-                        m_propTileMap.SetTile(position, m_wellTileData.tile);
+                        m_propTileMapNoCollision.SetTile(position, m_altarTileData.tile);
                         m_alterList.Add(position);
                     }
 
@@ -144,7 +163,7 @@ public class RoomContentGenerator : MonoBehaviour
                     }
                 }
 
-                
+
                 else // Place subsequent tiles vertically
                 {
                     Vector3Int previousPos = m_alterList[0];
@@ -161,7 +180,7 @@ public class RoomContentGenerator : MonoBehaviour
 
                     if (Vector3Int.Distance(bottomWall, previousPos) < Vector3Int.Distance(topWall, previousPos)) // Closer to the bottom wall
                     {
-                        yPosition = m_yLocation + m_height - (previousPos.y - bottomWall.y) - m_wellTileData.height;
+                        yPosition = m_yLocation + m_height - (previousPos.y - bottomWall.y) - m_altarTileData.height;
                     }
                     else // Closer to the top wall
                     {
@@ -173,22 +192,40 @@ public class RoomContentGenerator : MonoBehaviour
                     if (IsPositionValid(position))
                     {
                         Debug.Log($"Placing subsequent tile at: {position}");
-                        m_propTileMap.SetTile(position, m_wellTileData.tile);
+                        m_propTileMapNoCollision.SetTile(position, m_altarTileData.tile);
                         m_alterList.Add(position);
                     }
                 }
+
+                int placeTileOnAltar = RandomNumberGenerator(0, 21);
+                // Check whether to spawn item on the altar
+                if (placeTileOnAltar > 12)
+                {
+                    Debug.Log("Place tile on altar");
+
+                    // Select a random object to place on the altar
+                    var chosenWall = m_altarTileArray[Random.Range(0, m_altarTileArray.Length - 1)];
+
+                    // Get position of the last altar added
+                    position = m_alterList[m_alterList.Count - 1];
+
+                    // Update position to be the centre of the altars position
+                    position.x = position.x + 1;
+                    position.y = position.y + 1;
+
+                    // Set tile
+                    m_propTileMapCollision.SetTile(position, chosenWall);
+                }
+
+                else
+                {
+                    // Dont spawn an object on the altar
+                    Debug.Log("Don't place tile on altar");
+                }
+
             }
+            
         }
-
-        if (m_useTimer)
-        {
-            yield return StartCoroutine(DrawTimer());
-            m_isDrawing = false;
-        }
-
-        m_isDrawing = false;
-
-        Debug.Log("Ended drawing room content");
     }
 
     private bool IsPositionValid(Vector3Int position)
