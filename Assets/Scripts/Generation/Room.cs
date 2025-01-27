@@ -11,6 +11,7 @@ public class Room
     public int numberOfDoors;
     public List<Vector3Int> doorLocations; // List of door positions
     public List<Vector3Int> wallLocations; // List of wall positions
+    public List<Vector3Int> floorLocations; // List of floor positions
     public Direction entranceDirection;
     public int generationCount;
     public bool isSideRoom;

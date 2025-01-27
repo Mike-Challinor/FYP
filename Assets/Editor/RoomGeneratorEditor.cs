@@ -9,6 +9,7 @@ public class RoomGeneratorEditor : Editor
     private bool cornerWallSettingsFoldout = true;
     private bool roomSettingsFoldout = true;
     private bool generatorSettingsFoldout = true;
+    private bool floorFoldout = true;
 
     // Nested foldouts for walls
     private bool horizontalWallsFoldout = true;
@@ -51,7 +52,8 @@ public class RoomGeneratorEditor : Editor
         {
             EditorGUI.indentLevel++; // Indent the elements inside the foldout
 
-            roomGenerator.m_tileMap = (Tilemap)EditorGUILayout.ObjectField("Tilemap", roomGenerator.m_tileMap, typeof(Tilemap), true);
+            roomGenerator.m_wallTileMap = (Tilemap)EditorGUILayout.ObjectField("Wall Tilemap", roomGenerator.m_wallTileMap, typeof(Tilemap), true);
+            roomGenerator.m_floorTileMap = (Tilemap)EditorGUILayout.ObjectField("Floor Tilemap", roomGenerator.m_floorTileMap, typeof(Tilemap), true);
 
             // Horizontal Walls Foldout (nested)
             horizontalWallsFoldout = EditorGUILayout.Foldout(horizontalWallsFoldout, "Horizontal Walls", true);
@@ -99,6 +101,17 @@ public class RoomGeneratorEditor : Editor
                 roomGenerator.m_verticalDoorwayTopLeft = (TileBase)EditorGUILayout.ObjectField("Vertical Doorway corner top left", roomGenerator.m_verticalDoorwayTopLeft, typeof(TileBase), true);
                 roomGenerator.m_verticalDoorwayTopRight = (TileBase)EditorGUILayout.ObjectField("Vertical Doorway corner top right", roomGenerator.m_verticalDoorwayTopRight, typeof(TileBase), true);
                 
+                EditorGUI.indentLevel--; // Reset indentation after the foldout content
+            }
+
+            // Floor Foldout
+            floorFoldout = EditorGUILayout.Foldout(floorFoldout, "Floor tiles", true);
+            if (floorFoldout)
+            {
+                EditorGUI.indentLevel++; // Indent the elements inside the foldout
+
+                roomGenerator.m_floorTile = (TileBase)EditorGUILayout.ObjectField("Floor", roomGenerator.m_floorTile, typeof(TileBase), true);
+
                 EditorGUI.indentLevel--; // Reset indentation after the foldout content
             }
 
