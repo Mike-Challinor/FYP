@@ -4629,17 +4629,14 @@ MonoBehaviour:
   m_propTileMapCollision: {fileID: 1311666334}
   m_altarTile: {fileID: 11400000, guid: 1345449789883834387aab6069c779dd, type: 2}
   m_altarTileArray:
-  - {fileID: 11400000, guid: f230e62572c57834984ebdf41dafc3d0, type: 2}
-  - {fileID: 11400000, guid: 5ec408f40d3ab884b856e9811f067301, type: 2}
-  - {fileID: 11400000, guid: 39c5f73ddd4c96f40ac831c3bd6874da, type: 2}
   - {fileID: 11400000, guid: 49cf96a20a187cd47927bff770b2a05c, type: 2}
   - {fileID: 11400000, guid: 243c2ad7202f2c643bbcfbe00851c50e, type: 2}
   - {fileID: 11400000, guid: 7016c848beb8f6e42bc1f579c6d7cb7d, type: 2}
   - {fileID: 11400000, guid: 0f4dfc304187f3f45929b573bcff6e06, type: 2}
-  - {fileID: 11400000, guid: dde076f9685f80e40a94b27fdd26e257, type: 2}
-  - {fileID: 11400000, guid: c3f87b38be97d7b48813942c5c6e4a33, type: 2}
-  - {fileID: 11400000, guid: be0021f8f943d314aa485445f04641c1, type: 2}
-  - {fileID: 11400000, guid: 26708cb180b60d149bf536d489b63112, type: 2}
+  m_pillarTileArray:
+  - {fileID: 11400000, guid: d35bb749912988f41b08eee270388f99, type: 2}
+  - {fileID: 11400000, guid: d35bb749912988f41b08eee270388f99, type: 2}
+  - {fileID: 11400000, guid: f094c201befeccf4998f10fe640ded36, type: 2}
   m_width: 0
   m_height: 0
   m_xLocation: 0
@@ -4652,6 +4649,7 @@ MonoBehaviour:
   m_drawTime: 0
   m_isDrawing: 0
   m_useTimer: 1
+  m_maxNumberOfObjects: 8
 --- !u!4 &1369774617
 Transform:
   m_ObjectHideFlags: 0
