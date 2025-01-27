@@ -12,6 +12,7 @@ public class RoomContentGenerator : MonoBehaviour
 
     // Tile variables
     public Tile m_altarTile;
+    public Tile m_rockTile;
     public TileBase[] m_altarTileArray;
     public TileBase[] m_pillarTileArray;
     public TileBase[] m_objectTileArrayOneHeight;
@@ -45,7 +46,7 @@ public class RoomContentGenerator : MonoBehaviour
     public bool m_useTimer = true;
     public int m_maxNumberOfObjects = 10;
     public int m_minNumberOfRocks = 4;
-    public int m_maxNumberOfRocks = 9;
+    public int m_maxNumberOfRocks = 6;
 
     private void Start()
     {
@@ -149,7 +150,7 @@ public class RoomContentGenerator : MonoBehaviour
         // Set the rocks in the scene
         yield return SetRockLocations();
 
-        //Wait for timer before finishing drawing
+        // Wait for timer before finishing drawing
         yield return DrawTimer();
 
         m_isDrawing = false;
@@ -165,7 +166,7 @@ public class RoomContentGenerator : MonoBehaviour
         // Set the amount of wells in the scene between 1 and 4
         int amountToDraw = RandomNumberGenerator(1, 4);
 
-        for (int i = 0; i < amountToDraw; i++)
+        for (int i = 0; i <= amountToDraw; i++)
         {
             Vector3Int position;
 
@@ -563,7 +564,7 @@ public class RoomContentGenerator : MonoBehaviour
 
                 if (m_possibleTileLocations.Contains(tempPosition))
                 {
-                    var chosenTile = m_objectTileArrayTwoHeightLeft[Random.Range(0, m_objectTileArrayTwoHeightLeft.Length - 1)];
+                    var chosenTile = m_objectTileArrayTwoHeightLeft[Random.Range(0, m_objectTileArrayTwoHeightLeft.Length)];
                     m_propTileMapCollision.SetTile(position, chosenTile);
 
                     m_possibleTileLocations.Remove(position);
@@ -573,7 +574,7 @@ public class RoomContentGenerator : MonoBehaviour
                 }
                 else
                 {
-                    var chosenTile = m_objectTileArrayOneHeight[Random.Range(0, m_objectTileArrayOneHeight.Length - 1)];
+                    var chosenTile = m_objectTileArrayOneHeight[Random.Range(0, m_objectTileArrayOneHeight.Length)];
                     m_propTileMapCollision.SetTile(position, chosenTile);
 
                     m_possibleTileLocations.Remove(position);
@@ -587,7 +588,7 @@ public class RoomContentGenerator : MonoBehaviour
 
                 if (m_possibleTileLocations.Contains(tempPosition))
                 {
-                    var chosenTile = m_objectTileArrayTwoHeightRight[Random.Range(0, m_objectTileArrayTwoHeightRight.Length - 1)];
+                    var chosenTile = m_objectTileArrayTwoHeightRight[Random.Range(0, m_objectTileArrayTwoHeightRight.Length)];
                     m_propTileMapCollision.SetTile(position, chosenTile);
 
                     m_possibleTileLocations.Remove(position);
@@ -597,7 +598,7 @@ public class RoomContentGenerator : MonoBehaviour
                 }
                 else
                 {
-                    var chosenTile = m_objectTileArrayOneHeight[Random.Range(0, m_objectTileArrayOneHeight.Length - 1)];
+                    var chosenTile = m_objectTileArrayOneHeight[Random.Range(0, m_objectTileArrayOneHeight.Length)];
                     m_propTileMapCollision.SetTile(position, chosenTile);
 
                     m_possibleTileLocations.Remove(position);
@@ -612,7 +613,7 @@ public class RoomContentGenerator : MonoBehaviour
 
                 if (m_possibleTileLocations.Contains(tempPosition) && m_possibleTileLocations.Contains(tempPosition2))
                 {
-                    var chosenTile = m_objectTileArrayThreeWidth[Random.Range(0, m_objectTileArrayThreeWidth.Length - 1)];
+                    var chosenTile = m_objectTileArrayThreeWidth[Random.Range(0, m_objectTileArrayThreeWidth.Length)];
                     m_propTileMapCollision.SetTile(position, chosenTile);
 
                     m_possibleTileLocations.Remove(position);
@@ -623,7 +624,7 @@ public class RoomContentGenerator : MonoBehaviour
                 }
                 else
                 {
-                    var chosenTile = m_objectTileArrayOneHeight[Random.Range(0, m_objectTileArrayOneHeight.Length - 1)];
+                    var chosenTile = m_objectTileArrayOneHeight[Random.Range(0, m_objectTileArrayOneHeight.Length)];
                     m_propTileMapCollision.SetTile(position, chosenTile);
 
                     m_possibleTileLocations.Remove(position);
@@ -661,7 +662,29 @@ public class RoomContentGenerator : MonoBehaviour
     {
         Debug.Log("Setting Rock locations");
 
-        if (m_useTimer) { yield return StartCoroutine(DrawTimer()); }
+        Vector3Int position;
+
+        // Loop through and place rocks
+        for (int i = 0; i < m_maxNumberOfRocks; i++)
+        {
+            int xPosition = RandomNumberGenerator(m_xLocation + 1, m_xLocation + m_width - 1);
+            int yPosition = RandomNumberGenerator(m_yLocation + 2, m_yLocation + m_height - 2);
+
+            position = new Vector3Int(xPosition, yPosition, 0);
+
+            while (m_alterList.Contains(position)) // Loop through and make sure it is not the same position as the altar
+            {
+                xPosition = RandomNumberGenerator(m_xLocation + 1, m_xLocation + m_width - 1);
+                yPosition = RandomNumberGenerator(m_yLocation + 2, m_yLocation + m_height - 2);
+
+                position = new Vector3Int(xPosition, yPosition, 0);
+            }
+
+            m_propTileMapNoCollision.SetTile(position, m_rockTile);
+
+            if (m_useTimer) { yield return StartCoroutine(DrawTimer()); }
+        }
+        
     }
 
     private bool IsPositionValid(Vector3Int position)
