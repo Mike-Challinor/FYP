@@ -281,9 +281,16 @@ public class DungeonGenerator : MonoBehaviour
                 spawnedNumber.GetComponent<RoomNumberAssignment>().SetSprite(m_numberOfRooms - 1);
             }
 
+            /*
             // GENERATE ROOM CONTENT
             GenerateRoomContent(roomWidth, roomHeight, xLocation, yLocation, doorLocations, wallLocations, floorLocations, m_isASideRoom);
             m_isASideRoom = false;
+
+            // Wait until room drawing is complete
+            while (m_roomContentGeneratorScript.m_isDrawing)
+            {
+                yield return null;
+            } */
         }
 
         // Rebake nav mesh
@@ -367,6 +374,7 @@ public class DungeonGenerator : MonoBehaviour
 
                 if (m_maxNumberOfRooms - rooms.Count >= 1) // If more rooms are going to be needed
                 {
+                    Debug.Log("HELP");
 
                     if (m_roomLocationsToGenerate.Count >= 1)
                     {
