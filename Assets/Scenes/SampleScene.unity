@@ -2045,7 +2045,7 @@ MonoBehaviour:
   m_useTimer: 1
   m_spawnNumbers: 0
   m_numberOfRooms: 0
-  m_maxNumberOfRooms: 3
+  m_maxNumberOfRooms: 10
   m_distanceBetweenRooms: 2
   m_roomWidth: 19
   m_roomHeight: 12
@@ -4879,6 +4879,7 @@ MonoBehaviour:
   m_propTileMapNoCollision: {fileID: 579671617}
   m_propTileMapCollision: {fileID: 1311666334}
   m_altarTile: {fileID: 11400000, guid: 1345449789883834387aab6069c779dd, type: 2}
+  m_rockTile: {fileID: 11400000, guid: 766ee4ea729eaf948914b4483dfc15b7, type: 2}
   m_altarTileArray:
   - {fileID: 11400000, guid: 49cf96a20a187cd47927bff770b2a05c, type: 2}
   - {fileID: 11400000, guid: 243c2ad7202f2c643bbcfbe00851c50e, type: 2}
