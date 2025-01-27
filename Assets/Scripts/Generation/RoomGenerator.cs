@@ -69,13 +69,26 @@ public class RoomGenerator : MonoBehaviour
         m_wallLocations = wallLocations;
         m_floorLocations = floorLocations;
 
-        StartCoroutine(StartDrawingWallsAndFloor());
+        StartCoroutine(StartDrawingRoom());
     }
 
-    private IEnumerator StartDrawingWallsAndFloor()
+    private IEnumerator StartDrawingRoom()
     {
+        // Start drawing
         m_isDrawing = true;
 
+        // Wait until walls and floors have been drawn
+        yield return DrawWallsAndFloors();
+
+        // Wait until doors have been drawn
+        yield return DrawDoors();
+
+        // End drawing
+        m_isDrawing = false;
+    }
+
+    private IEnumerator DrawWallsAndFloors()
+    {
         // Loop for drawing floors first
         foreach (Vector3Int position in m_floorLocations)
         {
@@ -157,7 +170,7 @@ public class RoomGenerator : MonoBehaviour
                             var chosenWall = m_verticalWallsLeft[Random.Range(0, m_verticalWallsLeft.Length)];
                             m_wallTileMap.SetTile(Position, chosenWall);
                         }
-                        
+
                         else if (i == m_width) // Right edge
                         {
                             var chosenWall = m_verticalWallsRight[Random.Range(0, m_verticalWallsRight.Length)];
@@ -191,8 +204,10 @@ public class RoomGenerator : MonoBehaviour
 
             }
         }
+    }
 
-
+    private IEnumerator DrawDoors()
+    {
         // Loop for drawing the doors
         for (int d = 0; d < m_numberOfDoorways; d++)
         {
@@ -217,7 +232,7 @@ public class RoomGenerator : MonoBehaviour
                 Position = new Vector3Int(m_doorLocations[d].x, m_doorLocations[d].y + 3, 0);
                 m_wallTileMap.SetTile(Position, m_insideWallCornerLeftUpper);
 
-                DrawConnectingCorridors(m_doorLocations[d], 0);
+                yield return DrawConnectingCorridors(m_doorLocations[d], 0);
 
                 // Delete unrequired walls
                 Position = new Vector3Int(m_doorLocations[d].x, m_doorLocations[d].y + 0, 0);
@@ -247,7 +262,7 @@ public class RoomGenerator : MonoBehaviour
                 Position = new Vector3Int(m_doorLocations[d].x, m_doorLocations[d].y + 3, 0);
                 m_wallTileMap.SetTile(Position, m_insideWallCornerRightUpper);
 
-                DrawConnectingCorridors(m_doorLocations[d], 1);
+                yield return DrawConnectingCorridors(m_doorLocations[d], 1);
 
                 // Delete unrequired walls
                 Position = new Vector3Int(m_doorLocations[d].x, m_doorLocations[d].y + 0, 0);
@@ -277,7 +292,7 @@ public class RoomGenerator : MonoBehaviour
                 chosenWall = m_verticalWallsLeft[Random.Range(0, m_verticalWallsLeft.Length)];
                 m_wallTileMap.SetTile(Position, chosenWall);
 
-                DrawConnectingCorridors(m_doorLocations[d], 2);
+                yield return DrawConnectingCorridors(m_doorLocations[d], 2);
 
                 // Delete unrequired walls
                 Position = new Vector3Int(m_doorLocations[d].x, m_doorLocations[d].y, 0);
@@ -294,7 +309,7 @@ public class RoomGenerator : MonoBehaviour
             // Check whether door location is on top edge
             else if (m_doorLocations[d].y == m_yLocation + m_height)
             {
-                
+
                 // Get first position of the doorway
                 Vector3Int Position = new Vector3Int(m_doorLocations[d].x - 2, m_doorLocations[d].y, 0);
                 var chosenWall = m_bottomRightCornerWallUpper[Random.Range(0, m_bottomRightCornerWall.Length)];
@@ -315,7 +330,7 @@ public class RoomGenerator : MonoBehaviour
                 chosenWall = m_bottomLeftCornerWall[Random.Range(0, m_bottomLeftCornerWall.Length)];
                 m_wallTileMap.SetTile(Position, chosenWall);
 
-                DrawConnectingCorridors(m_doorLocations[d], 3);
+                yield return DrawConnectingCorridors(m_doorLocations[d], 3);
 
                 // Delete unrequired walls
                 Position = new Vector3Int(m_doorLocations[d].x, m_doorLocations[d].y, 0);
@@ -340,13 +355,9 @@ public class RoomGenerator : MonoBehaviour
             if (m_useTimer) { yield return StartCoroutine(DrawTimer()); }
 
         }
-
-        Debug.Log("Ended drawing the room");
-
-        m_isDrawing = false;
     }
 
-    private void DrawConnectingCorridors(Vector3Int doorLocation, int direction)
+    private IEnumerator DrawConnectingCorridors(Vector3Int doorLocation, int direction)
     {
         Vector3Int Position = new Vector3Int(doorLocation.x, doorLocation.y, 0);
 
@@ -462,6 +473,8 @@ public class RoomGenerator : MonoBehaviour
                 }
                 break;
         }
+
+        if (m_useTimer) { yield return DrawTimer(); }
         
     }
 

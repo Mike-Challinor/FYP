@@ -2043,14 +2043,15 @@ MonoBehaviour:
   isRightPath: 1
   numberPrefab: {fileID: 4712619134071791329, guid: f3f733bc6d0d956499625d9494e686a9, type: 3}
   m_useTimer: 1
+  m_spawnNumbers: 0
   m_numberOfRooms: 0
-  m_maxNumberOfRooms: 10
+  m_maxNumberOfRooms: 3
   m_distanceBetweenRooms: 2
   m_roomWidth: 19
   m_roomHeight: 12
   m_roomGenerator: {fileID: 825580255}
-  m_roomContentGenerator: {fileID: 1369774615}
   m_roomGeneratorScript: {fileID: 0}
+  m_roomContentGenerator: {fileID: 1369774615}
   m_roomContentGeneratorScript: {fileID: 0}
   m_navMesh: {fileID: 1107330881}
   m_navMeshSurface: {fileID: 0}
@@ -4918,6 +4919,8 @@ MonoBehaviour:
   m_isDrawing: 0
   m_useTimer: 1
   m_maxNumberOfObjects: 8
+  m_minNumberOfRocks: 4
+  m_maxNumberOfRocks: 9
 --- !u!4 &1369774617
 Transform:
   m_ObjectHideFlags: 0

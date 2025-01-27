@@ -44,6 +44,8 @@ public class RoomContentGenerator : MonoBehaviour
     public bool m_isDrawing = false;
     public bool m_useTimer = true;
     public int m_maxNumberOfObjects = 10;
+    public int m_minNumberOfRocks = 4;
+    public int m_maxNumberOfRocks = 9;
 
     private void Start()
     {
@@ -87,7 +89,7 @@ public class RoomContentGenerator : MonoBehaviour
         // Add all floor locations as possible positions
         foreach (Vector3Int position in m_floorLocations)
         {
-            if (position.x == m_xLocation + m_width - 1 || position.y == m_yLocation + 2 || position.y == m_yLocation + m_height - 2)
+            if (position.x == m_xLocation + m_width - 1 || position.x == m_xLocation + 1 || position.y == m_yLocation + m_height - 2)
             {
                 m_possibleTileLocations.Add(position);
             }
@@ -118,7 +120,7 @@ public class RoomContentGenerator : MonoBehaviour
             }
         }
 
-        // Remove all collected positions
+        // Remove all door positions
         foreach (Vector3Int pos in positionsToRemove.Distinct().ToList()) // Use Distinct to avoid duplicate removals
         {
             m_possibleTileLocations.Remove(pos);
@@ -136,20 +138,25 @@ public class RoomContentGenerator : MonoBehaviour
         Debug.Log($"XLocation is: {m_xLocation} YLocation is: {m_yLocation} Width is: {m_width} Height is: {m_height} Room halfway is: {m_width / 2} ");
 
         // Set the altars in the scene
-        StartCoroutine(SetAltarLocations());
         yield return SetAltarLocations();
 
         // Set the pillars in the scene
-        StartCoroutine(SetPillarLocations());
         yield return SetPillarLocations();
 
         // Set the objects in the scene
-        //StartCoroutine(SetObjectLocations());
-        //yield return SetObjectLocations();
+        yield return SetObjectLocations();
+
+        // Set the rocks in the scene
+        yield return SetRockLocations();
+
+        //Wait for timer before finishing drawing
+        yield return DrawTimer();
 
         m_isDrawing = false;
 
         Debug.Log("Ended drawing room content");
+
+        yield break;
 
     }
 
@@ -157,6 +164,7 @@ public class RoomContentGenerator : MonoBehaviour
     {
         // Set the amount of wells in the scene between 1 and 4
         int amountToDraw = RandomNumberGenerator(1, 4);
+
         for (int i = 0; i < amountToDraw; i++)
         {
             Vector3Int position;
@@ -195,7 +203,7 @@ public class RoomContentGenerator : MonoBehaviour
                     m_possibleTileLocations.Remove(position);
 
                     // Remove middle row of the alter from available positions
-                    position.y = position.y - 1;
+                    position.y = position.y + 1;
                     m_possibleTileLocations.Remove(position);
                     position.x = position.x - 1;
                     m_possibleTileLocations.Remove(position);
@@ -203,7 +211,7 @@ public class RoomContentGenerator : MonoBehaviour
                     m_possibleTileLocations.Remove(position);
 
                     // Remove top row of the alter from available positions
-                    position.y = position.y - 1;
+                    position.y = position.y + 1;
                     m_possibleTileLocations.Remove(position);
                     position.x = position.x + 1;
                     m_possibleTileLocations.Remove(position);
@@ -248,7 +256,7 @@ public class RoomContentGenerator : MonoBehaviour
                         m_possibleTileLocations.Remove(position);
 
                         // Remove middle row of the alter from available positions
-                        position.y = position.y - 1;
+                        position.y = position.y + 1;
                         m_possibleTileLocations.Remove(position);
                         position.x = position.x - 1;
                         m_possibleTileLocations.Remove(position);
@@ -256,7 +264,7 @@ public class RoomContentGenerator : MonoBehaviour
                         m_possibleTileLocations.Remove(position);
 
                         // Remove top row of the alter from available positions
-                        position.y = position.y - 1;
+                        position.y = position.y + 1;
                         m_possibleTileLocations.Remove(position);
                         position.x = position.x + 1;
                         m_possibleTileLocations.Remove(position);
@@ -331,13 +339,17 @@ public class RoomContentGenerator : MonoBehaviour
 
                     }
                 }
-            }
 
+                else
+                {
+                    Debug.Log($"Altar {i + 1} position: {position} is not valid.");
+                }
+            }
 
             int placeTileOnAltar = RandomNumberGenerator(0, 21);
 
             // Check whether to spawn item on the altar
-            if (placeTileOnAltar > 12)
+            if (placeTileOnAltar > 6)
             {
                 Debug.Log("Place tile on altar");
 
@@ -368,134 +380,158 @@ public class RoomContentGenerator : MonoBehaviour
 
     private IEnumerator SetPillarLocations()
     {
-        int numberOfPillars = RandomNumberGenerator(1, 2); // Set the number of pillars to 1 or 2 (each pillar will have its position mirrored)
+        Debug.Log("Starting SetPillarLocations");
+        int numberOfPillars = RandomNumberGenerator(1, 3); // Set the number of pillars to 1 or 2
 
-        // Set pillars on the top wall
         for (int i = 0; i < numberOfPillars; i++)
         {
-            if (i == 0)
-            {
-                // Place first pillar
-                PlaceFirstPillarTopWall();
+            Debug.Log($"Placing Pillar {i + 1} of {numberOfPillars}");
 
-                // Place the second pillar
-                PlaceSecondPillarTopWall();
+            // Place the first pillar
+            yield return PlaceFirstPillar();
+
+            // Optional timer
+            if (m_useTimer)
+            {
+                Debug.Log("Starting DrawTimer after first pillar");
+                yield return DrawTimer();
             }
 
-            else
+            // Place the second pillar
+            yield return PlaceSecondPillar();
+
+            // Optional timer
+            if (m_useTimer)
             {
-                // Place first pillar
-                PlaceFirstPillarTopWall();
-
-                // Place the second pillar
-                PlaceSecondPillarTopWall();
+                Debug.Log("Starting DrawTimer after second pillar");
+                yield return DrawTimer();
             }
-
-            if (m_useTimer) { yield return StartCoroutine(DrawTimer()); }
-
         }
+
+        Debug.Log("Ending SetPillarLocations");
+        yield break;
     }
-    
-    private void PlaceFirstPillarTopWall()
+
+    private IEnumerator PlaceFirstPillar()
     {
+        Debug.Log("Starting PlaceFirstPillar");
         Vector3Int position;
         int xPosition = RandomNumberGenerator(m_xLocation + 1, m_xLocation + m_width - 1);
         int yPosition = m_yLocation + m_height - 2;
 
+        int maxAttempts = 100;
+        int attempts = 0;
+
         // Loop for checking whether position needs to be re-rolled
-        while (m_doorLocations.Any(location => location.x == xPosition) ||
-            m_doorLocations.Any(location => location.x + 1 == xPosition) ||
-            m_doorLocations.Any(location => location.x + 2 == xPosition) ||
-            m_doorLocations.Any(location => location.x + 3 == xPosition) ||
-            m_doorLocations.Any(location => location.x - 1 == xPosition) ||
-            m_pillarList.Any(location => location.x == xPosition))
+        while ((m_doorLocations.Any(location => location.x == xPosition) ||
+                m_doorLocations.Any(location => location.x + 1 == xPosition) ||
+                m_doorLocations.Any(location => location.x + 2 == xPosition) ||
+                m_doorLocations.Any(location => location.x + 3 == xPosition) ||
+                m_doorLocations.Any(location => location.x - 1 == xPosition) ||
+                m_pillarList.Any(location => location.x == xPosition)) &&
+                attempts < maxAttempts)
         {
             xPosition = RandomNumberGenerator(m_xLocation + 1, m_xLocation + m_width - 1);
+            attempts++;
         }
 
-        // Set the position of the pillar
+        if (attempts >= maxAttempts)
+        {
+            Debug.LogError("Max attempts reached in PlaceFirstPillar while finding xPosition.");
+            yield break;
+        }
+
         position = new Vector3Int(xPosition, yPosition, 0);
+
+        if (m_pillarTileArray == null || m_pillarTileArray.Length == 0)
+        {
+            Debug.LogError("Pillar tile array is null or empty!");
+            yield break;
+        }
 
         // Select a random tile within the pillar array
         var chosenTile = m_pillarTileArray[Random.Range(0, m_pillarTileArray.Length)];
 
+        if (m_propTileMapCollision == null)
+        {
+            Debug.LogError("Tilemap is null!");
+            yield break;
+        }
+
         // Set tile
         m_propTileMapCollision.SetTile(position, chosenTile);
+
+        Debug.Log($"Placed first pillar at {position}");
 
         // Add positions to the list of pillar locations
         m_pillarList.Add(position);
 
         if (m_possibleTileLocations.Contains(position))
         {
-            // Remove bottom tile of the pillar from available positions
             m_possibleTileLocations.Remove(position);
-
-            // Remove middle tile of the pillar from available positions
-            position.y = position.y + 1;
-            m_possibleTileLocations.Remove(position);
-
-            // Remove top tile of the pillar from available positions
-            position.y = position.y + 1;
-            m_possibleTileLocations.Remove(position);
-
         }
 
+        Debug.Log("Ending PlaceFirstPillar");
+        yield break;
     }
 
-    private void PlaceSecondPillarTopWall()
+    private IEnumerator PlaceSecondPillar()
     {
-        Vector3Int position;
-        int xPosition;
+        Debug.Log("Starting PlaceSecondPillar");
 
-        // Get the position of the previous pillar
+        if (m_pillarList.Count == 0)
+        {
+            Debug.LogError("Pillar list is empty!");
+            yield break;
+        }
+
         Vector3Int previousPos = m_pillarList[m_pillarList.Count - 1];
         Vector3Int leftWall = new Vector3Int(m_xLocation, previousPos.y, 0);
         Vector3Int rightWall = new Vector3Int(m_xLocation + m_width, previousPos.y, 0);
 
-        if (Vector3Int.Distance(leftWall, previousPos) < Vector3Int.Distance(rightWall, previousPos)) // Nearer to the left wall
+        int xPosition = Vector3Int.Distance(leftWall, previousPos) < Vector3Int.Distance(rightWall, previousPos)
+            ? m_xLocation + m_width - (previousPos.x - leftWall.x)
+            : m_xLocation + (rightWall.x - previousPos.x);
+
+        xPosition = Mathf.Clamp(xPosition, m_xLocation + 1, m_xLocation + m_width - 1);
+        Vector3Int position = new Vector3Int(xPosition, previousPos.y, 0);
+
+        if (!IsPositionValid(position))
         {
-            xPosition = m_xLocation + m_width - (previousPos.x - leftWall.x);
-        }
-        else
-        {
-            xPosition = m_xLocation + (rightWall.x - previousPos.x);
-        }
-
-        position = new Vector3Int(xPosition, previousPos.y, 0);
-
-        if (IsPositionValid(position))
-        {
-            Debug.Log($"Placing second tile at: {position}");
-
-            // Select a random tile within the pillar array
-            var chosenTile = m_pillarTileArray[Random.Range(0, m_pillarTileArray.Length)];
-
-            // Set the tile
-            m_propTileMapCollision.SetTile(position, chosenTile);
-
-            // Add positions to the list of pillar locations
-            m_pillarList.Add(position);
-
-            if (m_possibleTileLocations.Contains(position))
-            {
-                // Remove bottom tile of the pillar from available positions
-                m_possibleTileLocations.Remove(position);
-
-                // Remove middle tile of the pillar from available positions
-                position.y = position.y + 1;
-                m_possibleTileLocations.Remove(position);
-
-                // Remove top tile of the pillar from available positions
-                position.y = position.y + 1;
-                m_possibleTileLocations.Remove(position);
-
-            }
+            Debug.LogError($"Position {position} is invalid.");
+            yield break;
         }
 
-        else
+        if (m_pillarTileArray == null || m_pillarTileArray.Length == 0)
         {
-            Debug.Log($"Unable to place second tile at: {position}");
+            Debug.LogError("Pillar tile array is null or empty!");
+            yield break;
         }
+
+        // Select a random tile within the pillar array
+        var chosenTile = m_pillarTileArray[Random.Range(0, m_pillarTileArray.Length)];
+
+        if (m_propTileMapCollision == null)
+        {
+            Debug.LogError("Tilemap is null!");
+            yield break;
+        }
+
+        // Set tile
+        m_propTileMapCollision.SetTile(position, chosenTile);
+
+        Debug.Log($"Placed second pillar at {position}");
+
+        // Add positions to the list of pillar locations
+        m_pillarList.Add(position);
+
+        if (m_possibleTileLocations.Contains(position))
+        {
+            m_possibleTileLocations.Remove(position);
+        }
+
+        Debug.Log("Ending PlaceSecondPillar");
+        yield break;
     }
 
     private IEnumerator SetObjectLocations()
@@ -507,135 +543,118 @@ public class RoomContentGenerator : MonoBehaviour
 
         int loopCount = m_maxNumberOfObjects;
 
-        // Loop through for each object to place
-        for (int i = 0; i < loopCount; i++)
+        for (int i = 0; i < loopCount;)
         {
-            // Break out of loop if no more objects can be placed
+            // Break out of the loop if no more objects can be placed
             if (m_possibleTileLocations.Count == 0)
             {
                 Debug.LogError("No more possible locations");
                 yield break;
             }
 
+            // Get a random position from the possible locations
             position = m_possibleTileLocations[RandomNumberGenerator(0, m_possibleTileLocations.Count - 1)];
+
+            bool placed = false; // Track if an object was placed
 
             if (position.x == m_xLocation + 1) // Is left wall
             {
-                Vector3Int tempPosition;
-                tempPosition = new Vector3Int(position.x, position.y + 1, position.z);
+                Vector3Int tempPosition = new Vector3Int(position.x, position.y + 1, position.z);
 
-                // Check if the tile above is also free
                 if (m_possibleTileLocations.Contains(tempPosition))
                 {
-                    // Select a random tile within the object array
                     var chosenTile = m_objectTileArrayTwoHeightLeft[Random.Range(0, m_objectTileArrayTwoHeightLeft.Length - 1)];
-
-                    // Set the tile
                     m_propTileMapCollision.SetTile(position, chosenTile);
 
-                    // Remove tiles from possible locations list
                     m_possibleTileLocations.Remove(position);
                     m_possibleTileLocations.Remove(tempPosition);
-                }
 
+                    placed = true;
+                }
                 else
                 {
-                    // Select a random tile within the object array
                     var chosenTile = m_objectTileArrayOneHeight[Random.Range(0, m_objectTileArrayOneHeight.Length - 1)];
-
-                    // Set the tile
                     m_propTileMapCollision.SetTile(position, chosenTile);
 
-                    // Remove tile from possible locations list
                     m_possibleTileLocations.Remove(position);
+
+                    placed = true;
                 }
-
-                loopCount--;
             }
-
-            else if (position.x == m_xLocation + m_height - 1) // Is Right Wall
+            else if (position.x == m_xLocation + m_width - 1) // Is right wall
             {
-                Vector3Int tempPosition;
-                tempPosition = new Vector3Int(position.x, position.y + 1, position.z);
+                Vector3Int tempPosition = new Vector3Int(position.x, position.y + 1, position.z);
 
-                // Check if the tile above is also free
                 if (m_possibleTileLocations.Contains(tempPosition))
                 {
-                    // Select a random tile within the object array
                     var chosenTile = m_objectTileArrayTwoHeightRight[Random.Range(0, m_objectTileArrayTwoHeightRight.Length - 1)];
-
-                    // Set the tile
                     m_propTileMapCollision.SetTile(position, chosenTile);
 
-                    // Remove tiles from possible locations list
                     m_possibleTileLocations.Remove(position);
                     m_possibleTileLocations.Remove(tempPosition);
-                }
 
+                    placed = true;
+                }
                 else
                 {
-                    // Select a random tile within the object array
                     var chosenTile = m_objectTileArrayOneHeight[Random.Range(0, m_objectTileArrayOneHeight.Length - 1)];
-
-                    // Set the tile
                     m_propTileMapCollision.SetTile(position, chosenTile);
 
-                    // Remove tile from possible locations list
                     m_possibleTileLocations.Remove(position);
+
+                    placed = true;
                 }
-
-                loopCount--;
             }
-
-            else if (position.y == m_yLocation - 2) // Is Top Wall
+            else if (position.y == m_yLocation + m_height - 2) // Is top wall
             {
-                Vector3Int tempPosition;
-                Vector3Int tempPosition2;
-                tempPosition = new Vector3Int(position.x - 1, position.y, position.z);
-                tempPosition2 = new Vector3Int(position.x + 1, position.y, position.z);
+                Vector3Int tempPosition = new Vector3Int(position.x - 1, position.y, position.z);
+                Vector3Int tempPosition2 = new Vector3Int(position.x + 1, position.y, position.z);
 
-                // Check if the tile to the left and right is free
                 if (m_possibleTileLocations.Contains(tempPosition) && m_possibleTileLocations.Contains(tempPosition2))
                 {
-                    // Select a random tile within the object array
                     var chosenTile = m_objectTileArrayThreeWidth[Random.Range(0, m_objectTileArrayThreeWidth.Length - 1)];
-
-                    // Set the tile
                     m_propTileMapCollision.SetTile(position, chosenTile);
 
-                    // Remove tiles from possible locations list
                     m_possibleTileLocations.Remove(position);
                     m_possibleTileLocations.Remove(tempPosition);
-                    m_possibleTileLocations.Remove(tempPosition);
+                    m_possibleTileLocations.Remove(tempPosition2);
 
+                    placed = true;
                 }
-
                 else
                 {
-                    // Select a random tile within the object array
                     var chosenTile = m_objectTileArrayOneHeight[Random.Range(0, m_objectTileArrayOneHeight.Length - 1)];
-
-                    // Set the tile
                     m_propTileMapCollision.SetTile(position, chosenTile);
 
-                    // Remove tile from possible locations list
                     m_possibleTileLocations.Remove(position);
+
+                    placed = true;
                 }
-
-                loopCount--;
             }
-
             else
             {
-                loopCount++;
+                Debug.Log($"Position is not top, right, or left wall. Position = {position}");
             }
 
-            if (m_useTimer) { yield return StartCoroutine(DrawTimer()); }
+            // If an object was placed, increment the iteration counter
+            if (placed)
+            {
+                i++; // Only increment if placement succeeded
+            }
+            else
+            {
+                Debug.LogWarning("Failed to place an object. Retrying...");
+            }
 
+            // Optional timer between placements
+            if (m_useTimer)
+            {
+                yield return StartCoroutine(DrawTimer());
+            }
         }
 
+        Debug.Log("Finished placing objects.");
         yield break;
-
     }
 
     private IEnumerator SetRockLocations()
@@ -647,8 +666,8 @@ public class RoomContentGenerator : MonoBehaviour
 
     private bool IsPositionValid(Vector3Int position)
     {
-        return position.x >= m_xLocation && position.x < m_xLocation + m_width &&
-               position.y >= m_yLocation && position.y < m_yLocation + m_height;
+        return position.x >= m_xLocation + 1 && position.x <= m_xLocation + m_width - 1
+            && position.y >= m_yLocation && position.y < m_yLocation + m_height;
     }
 
     private IEnumerator DrawTimer()
@@ -663,7 +682,10 @@ public class RoomContentGenerator : MonoBehaviour
 
     private int RandomNumberGenerator(int min, int max)
     {
-        return Random.Range(min, max + 1);
+        Debug.Log($"Min is: { min } Max is: {max}");
+        int rando = Random.Range(min, max + 1);
+        Debug.Log($"Result is: { rando }");
+        return rando;
     }
 
 
