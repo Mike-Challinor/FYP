@@ -2045,7 +2045,7 @@ MonoBehaviour:
   m_useTimer: 1
   m_spawnNumbers: 0
   m_numberOfRooms: 0
-  m_maxNumberOfRooms: 10
+  m_maxNumberOfRooms: 40
   m_distanceBetweenRooms: 2
   m_roomWidth: 19
   m_roomHeight: 12
@@ -4916,7 +4916,7 @@ MonoBehaviour:
   m_floorLocations: []
   m_possibleTileLocations: []
   m_isSideRoom: 0
-  m_drawTime: 0
+  m_drawTime: 0.5
   m_isDrawing: 0
   m_useTimer: 1
   m_maxNumberOfObjects: 8

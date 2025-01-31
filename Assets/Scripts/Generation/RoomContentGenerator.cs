@@ -382,7 +382,7 @@ public class RoomContentGenerator : MonoBehaviour
     private IEnumerator SetPillarLocations()
     {
         Debug.Log("Starting SetPillarLocations");
-        int numberOfPillars = RandomNumberGenerator(1, 3); // Set the number of pillars to 1 or 2
+        int numberOfPillars = RandomNumberGenerator(1, 2); // Set the number of pillars to 1 or 2
 
         for (int i = 0; i < numberOfPillars; i++)
         {
