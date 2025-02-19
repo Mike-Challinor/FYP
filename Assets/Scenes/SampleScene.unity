@@ -2045,7 +2045,7 @@ MonoBehaviour:
   m_useTimer: 1
   m_spawnNumbers: 0
   m_numberOfRooms: 0
-  m_maxNumberOfRooms: 40
+  m_maxNumberOfRooms: 6
   m_distanceBetweenRooms: 2
   m_roomWidth: 19
   m_roomHeight: 12
@@ -4889,7 +4889,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d35bb749912988f41b08eee270388f99, type: 2}
   - {fileID: 11400000, guid: d35bb749912988f41b08eee270388f99, type: 2}
   - {fileID: 11400000, guid: f094c201befeccf4998f10fe640ded36, type: 2}
-  m_objectTileArrayOneHeight:
+  m_objectTileArrayTwoHeight:
   - {fileID: 11400000, guid: c1997e7f2e4840443b824043817969ec, type: 2}
   - {fileID: 11400000, guid: 593a437af3dbf9b48a74f7d4c0e2a87d, type: 2}
   - {fileID: 11400000, guid: b4dc09800a4393041ab09b0b9654abe8, type: 2}
@@ -4898,10 +4898,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: eaa7ecc8575b27544a09f25c1613e1d1, type: 2}
   - {fileID: 11400000, guid: 9713468704f71df45ac330d4eaf32324, type: 2}
   - {fileID: 11400000, guid: 39c5f73ddd4c96f40ac831c3bd6874da, type: 2}
-  m_objectTileArrayTwoHeightLeft:
+  m_objectTileArrayThreeHeightLeft:
   - {fileID: 11400000, guid: 628675dff7667124b9c921c25d942088, type: 2}
   - {fileID: 11400000, guid: fcf8fe3c73f0b8b4297884742fea714e, type: 2}
-  m_objectTileArrayTwoHeightRight:
+  m_objectTileArrayThreeHeightRight:
   - {fileID: 11400000, guid: 9ad1d3e012b312c41978d6fb965844fe, type: 2}
   - {fileID: 11400000, guid: fcf8fe3c73f0b8b4297884742fea714e, type: 2}
   m_objectTileArrayThreeWidth:
@@ -4916,7 +4916,7 @@ MonoBehaviour:
   m_floorLocations: []
   m_possibleTileLocations: []
   m_isSideRoom: 0
-  m_drawTime: 0.5
+  m_drawTime: 0.1
   m_isDrawing: 0
   m_useTimer: 1
   m_maxNumberOfObjects: 8
