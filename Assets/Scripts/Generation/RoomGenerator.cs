@@ -329,6 +329,26 @@ public class RoomGenerator : MonoBehaviour
                 Position = new Vector3Int(m_doorLocations[d].x + 3, m_doorLocations[d].y - 1, 0);
                 chosenWall = m_bottomLeftCornerWall[Random.Range(0, m_bottomLeftCornerWall.Length)];
                 m_wallTileMap.SetTile(Position, chosenWall);
+                
+                // Fifth position of the doorway
+                Position = new Vector3Int(m_doorLocations[d].x + 2, m_doorLocations[d].y, 0);
+                chosenWall = m_verticalWallsLeft[Random.Range(0, m_verticalWallsLeft.Length)];
+                m_wallTileMap.SetTile(Position, chosenWall);
+
+                // Sixth position of the doorway
+                Position = new Vector3Int(m_doorLocations[d].x + 2, m_doorLocations[d].y - 1, 0);
+                chosenWall = m_verticalWallsLeft[Random.Range(0, m_verticalWallsLeft.Length)];
+                m_wallTileMap.SetTile(Position, chosenWall);
+
+                // Seventh position of the doorway
+                Position = new Vector3Int(m_doorLocations[d].x - 1, m_doorLocations[d].y, 0);
+                chosenWall = m_verticalWallsRight[Random.Range(0, m_verticalWallsRight.Length)];
+                m_wallTileMap.SetTile(Position, chosenWall);
+
+                // Eighth position of the doorway
+                Position = new Vector3Int(m_doorLocations[d].x - 1, m_doorLocations[d].y - 1, 0);
+                chosenWall = m_verticalWallsRight[Random.Range(0, m_verticalWallsRight.Length)];
+                m_wallTileMap.SetTile(Position, chosenWall); 
 
                 yield return DrawConnectingCorridors(m_doorLocations[d], 3);
 
@@ -340,14 +360,6 @@ public class RoomGenerator : MonoBehaviour
                 Position = new Vector3Int(m_doorLocations[d].x + 1, m_doorLocations[d].y, 0);
                 m_wallTileMap.SetTile(Position, null);
                 Position = new Vector3Int(m_doorLocations[d].x + 1, m_doorLocations[d].y - 1, 0);
-                m_wallTileMap.SetTile(Position, null);
-                Position = new Vector3Int(m_doorLocations[d].x + 2, m_doorLocations[d].y, 0);
-                m_wallTileMap.SetTile(Position, null);
-                Position = new Vector3Int(m_doorLocations[d].x + 2, m_doorLocations[d].y - 1, 0);
-                m_wallTileMap.SetTile(Position, null);
-                Position = new Vector3Int(m_doorLocations[d].x - 1, m_doorLocations[d].y, 0);
-                m_wallTileMap.SetTile(Position, null);
-                Position = new Vector3Int(m_doorLocations[d].x - 1, m_doorLocations[d].y - 1, 0);
                 m_wallTileMap.SetTile(Position, null);
 
             }
@@ -365,7 +377,7 @@ public class RoomGenerator : MonoBehaviour
         {
             case 0: // Left direction
 
-                for (int i = 1; i <= m_distanceBetweenRooms; i++)
+                for (int i = 1; i <= m_distanceBetweenRooms - 1; i++)
                 {
                     // Top walls
                     var chosenWall = m_horizontalWallsTopUpper[Random.Range(0, m_horizontalWallsTopUpper.Length)];
@@ -412,9 +424,13 @@ public class RoomGenerator : MonoBehaviour
                     m_wallTileMap.SetTile(Position, chosenWall);
 
                     // Floor
-                    Position = new Vector3Int(doorLocation.x + i, doorLocation.y, 0); // Bottom floor
+                    Position = new Vector3Int(doorLocation.x + i, doorLocation.y, 0); // Bottom floor (right)
                     m_floorTileMap.SetTile(Position, m_floorTile);
-                    Position = new Vector3Int(doorLocation.x + i, doorLocation.y + 1, 0); // Top floor
+                    Position = new Vector3Int(doorLocation.x + i, doorLocation.y + 1, 0); // Top floor (right)
+                    m_floorTileMap.SetTile(Position, m_floorTile);
+                    Position = new Vector3Int(doorLocation.x, doorLocation.y, 0); // Bottom floor (left)
+                    m_floorTileMap.SetTile(Position, m_floorTile);
+                    Position = new Vector3Int(doorLocation.x, doorLocation.y + 1, 0); // Top floor (left)
                     m_floorTileMap.SetTile(Position, m_floorTile);
                 }
                 break;

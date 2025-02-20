@@ -44,6 +44,9 @@ public class Player_Input : MonoBehaviour
         m_playerActions.Player.Attack.performed += InitiateAttack;
         // Stop attacking on release
         m_playerActions.Player.Attack.canceled += EndAttack;
+
+        // Initiate interact when pressed
+        m_playerActions.Player.Interact.canceled += InteractWithObject;
     }
 
     private void OnDisable()
@@ -53,9 +56,11 @@ public class Player_Input : MonoBehaviour
         m_playerActions.Player.Move.canceled -= ctx => m_moveInput = Vector2.zero;
 
         // Unsub from player attack
-        // Unsub from player attack
         m_playerActions.Player.Attack.performed -= InitiateAttack;
         m_playerActions.Player.Attack.canceled -= EndAttack;
+
+        // Unsub from interact
+        m_playerActions.Player.Interact.canceled -= InteractWithObject;
 
         // Disable input
         m_playerActions.Disable();
@@ -85,6 +90,17 @@ public class Player_Input : MonoBehaviour
     {
         Debug.Log("End Attack!");
         m_playerController.EndAttack();
+    }
+
+    private void InteractWithObject(InputAction.CallbackContext ctx)
+    {
+        Debug.Log("Interact Called");
+
+        if (m_playerController.GetInteractionStatus())
+        {
+            Debug.Log("Can Interact");
+            m_playerController.Interact();
+        }
     }
 
 }

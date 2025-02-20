@@ -13,12 +13,14 @@ public class RoomContentGenerator : MonoBehaviour
     // Tile variables
     public Tile m_altarTile;
     public Tile m_rockTile;
+    public Tile m_boxTile;
     public TileBase[] m_altarTileArray;
     public TileBase[] m_pillarTileArray;
     public TileBase[] m_objectTileArrayTwoHeight;
     public TileBase[] m_objectTileArrayThreeHeightLeft;
     public TileBase[] m_objectTileArrayThreeHeightRight;
     public TileBase[] m_objectTileArrayThreeWidth;
+    public TileBase[] m_objectTileArrayPlace;
 
     // Tile data settings
     private TileData m_altarTileData;
@@ -39,6 +41,7 @@ public class RoomContentGenerator : MonoBehaviour
     private List<Vector3Int> m_alterList = new List<Vector3Int>();
     private List<Vector3Int> m_pillarList = new List<Vector3Int>();
     public bool m_isSideRoom;
+    public bool m_isLastRoom;
 
     // Generator settingsfor each
     public float m_drawTime = 0.0f;
@@ -63,7 +66,7 @@ public class RoomContentGenerator : MonoBehaviour
 
     }
 
-    public void GenerateRoom(int width, int height, int xLocation, int yLocation, List<Vector3Int> doorLocations, List<Vector3Int> wallLocations, List<Vector3Int> floorLocations, bool isSideRoom)
+    public void GenerateRoom(int width, int height, int xLocation, int yLocation, List<Vector3Int> doorLocations, List<Vector3Int> wallLocations, List<Vector3Int> floorLocations, bool isSideRoom, bool isLastRoom)
     {
         // Ensure the game is running
         if (!Application.isPlaying)
@@ -80,6 +83,7 @@ public class RoomContentGenerator : MonoBehaviour
         m_wallLocations = wallLocations;
         m_floorLocations = floorLocations;
         m_isSideRoom = isSideRoom;
+        m_isLastRoom = isLastRoom;
 
         // Reset possible tile locations
         if (m_possibleTileLocations.Count != 0)
@@ -163,8 +167,23 @@ public class RoomContentGenerator : MonoBehaviour
 
     private IEnumerator SetAltarLocations()
     {
-        // Set the amount of wells in the scene between 1 and 4
-        int amountToDraw = RandomNumberGenerator(1, 4);
+        int amountToDraw;
+
+        // Check if is a side room
+        if (m_isSideRoom || m_isLastRoom)
+        {
+            Debug.LogError("Side room... setting altars to 4");
+
+            // Always draw 4 altars on a side room
+            amountToDraw = 4;
+        }
+
+        else
+        {
+            // Set the amount of wells in the scene between 1 and 4
+            amountToDraw = RandomNumberGenerator(1, 3);
+        }
+        
 
         Debug.Log($"Amount of altars to draw is: {amountToDraw}");
 
@@ -594,6 +613,13 @@ public class RoomContentGenerator : MonoBehaviour
                         m_possibleTileLocations.Remove(tempPosition);
 
                         placed = true;
+
+                        // If the item placed is the box, place an item (vase) on top (50% chance)
+                        if (chosenTile == m_boxTile && Random.Range(0, 100) < 50)
+                        {
+                            chosenTile = m_objectTileArrayPlace[Random.Range(0, m_objectTileArrayPlace.Length)];
+                            m_propTileMapCollision.SetTile(tempPosition, chosenTile);
+                        }
                     }
 
                 }                
@@ -637,6 +663,13 @@ public class RoomContentGenerator : MonoBehaviour
                         m_possibleTileLocations.Remove(tempPosition);
 
                         placed = true;
+
+                        // If the item placed is the box, place an item (vase) on top (50% chance)
+                        if (chosenTile == m_boxTile && Random.Range(0, 100) < 50)
+                        {
+                            chosenTile = m_objectTileArrayPlace[Random.Range(0, m_objectTileArrayPlace.Length)];
+                            m_propTileMapCollision.SetTile(tempPosition, chosenTile);
+                        }
 
                     }
 
@@ -684,6 +717,13 @@ public class RoomContentGenerator : MonoBehaviour
                         m_possibleTileLocations.Remove(position);
 
                         placed = true;
+
+                        // If the item placed is the box, place an item (vase) on top (50% chance)
+                        if (chosenTile == m_boxTile && Random.Range(0, 100) < 50)
+                        {
+                            chosenTile = m_objectTileArrayPlace[Random.Range(0, m_objectTileArrayPlace.Length)];
+                            m_propTileMapCollision.SetTile(tempPosition, chosenTile);
+                        }
                     }
 
                     // Invalid tile position
@@ -810,9 +850,6 @@ public class RoomContentGenerator : MonoBehaviour
             }
         }
     }
-
-
-
 
     private bool IsPositionValid(Vector3Int position)
     {
