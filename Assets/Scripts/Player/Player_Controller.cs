@@ -5,12 +5,17 @@ public class Player_Controller : MonoBehaviour
 {
     [SerializeField] private GameObject m_playerCam;
     [SerializeField] private GameObject m_player;
+    [SerializeField] private Player_HUD m_playerHUD;
     [SerializeField] private bool m_isAttacking = false;
     [SerializeField] private bool m_canAttack = true;
+    [SerializeField] private bool m_canInteract = false;
     [SerializeField] private float m_attackTimer = 0.5f;
+    [SerializeField] private float m_attackDamage = 40f;
     [SerializeField] private GameObject m_projectilePrefab;
     [SerializeField] private GameObject m_firePoint;
     [SerializeField] private GameObject m_playerCameraPrefab;
+    [SerializeField] private GameObject m_interactableObject;
+    [SerializeField] private int m_keyCount = 0;
 
     private bool isCollidingWithWall = false;
     private float m_maxHealth = 100.0f;
@@ -24,6 +29,7 @@ public class Player_Controller : MonoBehaviour
         m_healthComponent = GetComponent<Health_Component>();
         m_healthComponent.InitHealth(m_maxHealth);
         m_RB = GetComponent<Rigidbody2D>();
+        m_playerHUD.InitHUD(m_maxHealth);
     }
 
     void FixedUpdate()
@@ -74,6 +80,7 @@ public class Player_Controller : MonoBehaviour
             Vector2 fireDirection = (mousePos - m_firePoint.transform.position).normalized;
 
             projectile.GetComponent<Projectile>().SetDirection(fireDirection);
+            projectile.GetComponent<Projectile>().SetDamage(m_attackDamage);
 
             m_canAttack = false;
 
@@ -129,4 +136,76 @@ public class Player_Controller : MonoBehaviour
             Debug.LogError("ERROR::PLAYERNETWORK::SPAWNPLAYERCAMERA:: Player camera is null");
         }
     }
+
+    public void Interact()
+    {
+        m_interactableObject.GetComponent<RewardChest>().GetReward(this);
+    }
+
+    public void SetInteractionStatus(bool canInteract, GameObject interactObject)
+    {
+        m_interactableObject = interactObject;
+        m_canInteract = canInteract;
+
+        if (m_canInteract)
+        {
+            m_playerHUD.ShowInteractText(true);
+        }
+
+        else
+        {
+            m_playerHUD.ShowInteractText(false);
+        }
+    }
+
+    public bool GetInteractionStatus()
+    {
+        return m_canInteract;
+    }
+
+    public void AddKey()
+    {
+        m_keyCount++;
+    }
+    public int GetKeyCount()
+    {
+        return m_keyCount;
+    }
+
+    // Decrease attack timer by percentage
+    public void DecreaseAttackTimer(float percentage)
+    {
+        // Turn percentage to a decimal
+        float percentageDecimal = percentage / 100;
+
+        // Get percentage of the attack timer
+        float amountToRemove = m_attackTimer * percentageDecimal;
+
+        // Remove percentage from the attack timer
+        m_attackTimer = m_attackTimer - amountToRemove;
+    }
+
+    public void IncreaseMaxHealth(float percentage)
+    {
+        // Turn percentage to a decimal
+        float percentageDecimal = percentage / 100;
+
+        // Get percentage of the max health from health component
+        float amountToAdd = m_healthComponent.GetMaxHealth() * percentageDecimal;
+
+        // Remove percentage from the max health on health component
+        m_healthComponent.IncreaseMaxHealth(amountToAdd);
+    }
+    public void IncreaseDamage(float percentage)
+    {
+        // Turn percentage to a decimal
+        float percentageDecimal = percentage / 100;
+
+        // Get percentage of the damage float
+        float amountToAdd = m_attackDamage * percentageDecimal;
+
+        // Remove percentage amount from the damage float
+        m_attackDamage = m_attackDamage + amountToAdd;
+    }
+
 }

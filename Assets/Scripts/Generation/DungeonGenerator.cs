@@ -28,6 +28,7 @@ public class DungeonGenerator : MonoBehaviour
     public NavMeshPlus.Components.NavMeshSurface m_navMeshSurface;
 
     private bool m_isASideRoom = false;
+    private bool m_isLastRoom = false;
 
     private void Awake()
     {
@@ -70,13 +71,13 @@ public class DungeonGenerator : MonoBehaviour
         List<Vector3Int> floorLocations = new List<Vector3Int> { new Vector3Int(9, -4, 0) };
 
         // Set for the start room
-        AddRoom(19, 12, -10, -8, 1, doorLocations, wallLocations, floorLocations, 0, 0, false);
+        AddRoom(19, 12, -10, -8, 1, doorLocations, wallLocations, floorLocations, 0, 0, false, false);
 
     }
 
 
     // Method to add a new room to the dungeon
-    public void AddRoom(int width, int height, int xLocation, int yLocation, int numberOfDoors, List<Vector3Int> doorLocations, List<Vector3Int> wallLocations, List<Vector3Int> floorLocations, Direction entranceDirection, int generationCount, bool isSideRoom)
+    public void AddRoom(int width, int height, int xLocation, int yLocation, int numberOfDoors, List<Vector3Int> doorLocations, List<Vector3Int> wallLocations, List<Vector3Int> floorLocations, Direction entranceDirection, int generationCount, bool isSideRoom, bool isLastRoom)
     {
         Room newRoom = new Room
         {
@@ -258,13 +259,13 @@ public class DungeonGenerator : MonoBehaviour
             {
                 // Insert room as second to last item in list
                 InsertRoom(roomWidth, roomHeight, xLocation, yLocation, numberOfDoors, doorLocations, wallLocations, floorLocations, entranceDirection, rooms.Count, true);
-                m_isASideRoom = false;
+                //m_isASideRoom = false;
             }
 
             else
             {
                 // Add room to the list
-                AddRoom(roomWidth, roomHeight, xLocation, yLocation, numberOfDoors, doorLocations, wallLocations, floorLocations, entranceDirection, rooms.Count, false);
+                AddRoom(roomWidth, roomHeight, xLocation, yLocation, numberOfDoors, doorLocations, wallLocations, floorLocations, entranceDirection, rooms.Count, false, m_isLastRoom);
             }
 
             // Generate the room visually with the room generator script
@@ -276,7 +277,9 @@ public class DungeonGenerator : MonoBehaviour
                 yield return null;
             }
 
-            GenerateRoomContent(roomWidth, roomHeight, xLocation, yLocation, doorLocations, wallLocations, floorLocations, m_isASideRoom);
+            GenerateRoomContent(roomWidth, roomHeight, xLocation, yLocation, doorLocations, wallLocations, floorLocations, m_isASideRoom, m_isLastRoom);
+
+            m_isASideRoom = false;
 
             // Wait until room content drawing is complete
             while (m_roomContentGeneratorScript.m_isDrawing)
@@ -360,6 +363,7 @@ public class DungeonGenerator : MonoBehaviour
             {
                 Debug.Log("This is the last room");
                 numberOfDoors = 1; // For the entrance door
+                m_isLastRoom = true;
             }
 
             // If there are more than one queued up rooms then the first room will be a side room
@@ -373,10 +377,8 @@ public class DungeonGenerator : MonoBehaviour
             // If the previous room has 3 doors
             else if (previousRoom.numberOfDoors == 3)
             {
-
                 if (m_maxNumberOfRooms - rooms.Count >= 1) // If more rooms are going to be needed
                 {
-
                     if (m_roomLocationsToGenerate.Count >= 1)
                     {
                         numberOfDoors = 1;
@@ -415,7 +417,10 @@ public class DungeonGenerator : MonoBehaviour
             else // Max number of doors can be positioned
             {
                 numberOfDoors = Random.Range(2, maxNumberOfDoorsTemp + 1);
-                if (numberOfDoors == 0) { numberOfDoors = 1; }
+                if (numberOfDoors == 0) 
+                { 
+                    numberOfDoors = 1; 
+                }
                 Debug.Log($"maxNumberofDoorsTemp = " + maxNumberOfDoorsTemp);
 
                 if (m_maxNumberOfRooms - rooms.Count == 2)
@@ -628,11 +633,11 @@ public class DungeonGenerator : MonoBehaviour
         m_roomGeneratorScript.GenerateRoom(roomWidth, roomHeight, xLocation, yLocation, numberOfDoors, doorLocations, wallLocations, floorLocations); // Generate the room
     }
 
-    void GenerateRoomContent(int roomWidth, int roomHeight, int xLocation, int yLocation, List<Vector3Int> doorLocations, List<Vector3Int> wallLocations, List<Vector3Int> floorLocations, bool isSideRoom)
+    void GenerateRoomContent(int roomWidth, int roomHeight, int xLocation, int yLocation, List<Vector3Int> doorLocations, List<Vector3Int> wallLocations, List<Vector3Int> floorLocations, bool isSideRoom, bool isLastRoom)
     {
         // Generate the room visually
         m_roomContentGeneratorScript.SetUseTimer(m_useTimer); // Set whether to use a timer when drawing on the room generator
-        m_roomContentGeneratorScript.GenerateRoom(roomWidth, roomHeight, xLocation, yLocation, doorLocations, wallLocations, floorLocations, isSideRoom); // Generate the room
+        m_roomContentGeneratorScript.GenerateRoom(roomWidth, roomHeight, xLocation, yLocation, doorLocations, wallLocations, floorLocations, isSideRoom, isLastRoom); // Generate the room
     }
 
     Direction GetEntranceDirection(Room previousRoom, int currentX, int currentY)

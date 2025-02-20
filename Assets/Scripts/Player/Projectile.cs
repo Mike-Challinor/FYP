@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Projectile : MonoBehaviour
 {
-    [SerializeField] private float m_projectileSpeed = 12f;
+    [SerializeField] private float m_projectileSpeed = 36f;
     [SerializeField] private float m_damage = 40f;
     [SerializeField] private float m_lifespan = 4f;
     private Rigidbody2D m_RB;
@@ -44,6 +44,10 @@ public class Projectile : MonoBehaviour
     {
         float angle = Mathf.Atan2(fireDirection.y, fireDirection.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0, 0, angle - 90f);
+    }
+    public void SetDamage(float damage)
+    {
+        m_damage = damage;
     }
 
     private void MoveProjectile()

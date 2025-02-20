@@ -4,6 +4,7 @@ public class Health_Component : MonoBehaviour
 {
     [SerializeField] private float m_maxHealth = 150.0f;
     [SerializeField] private float m_currentHealth;
+    [SerializeField] private Player_HUD m_playerHUD;
 
     public void InitHealth(float maxHealth)
     {
@@ -36,11 +37,24 @@ public class Health_Component : MonoBehaviour
         {
             m_currentHealth = m_currentHealth - healthToRemove;
         }
+
+        m_playerHUD.SetCurrentHealthOnSlider(m_currentHealth);
     }
 
     public float GetHealth()
     {
         return m_currentHealth;
+    }
+    public float GetMaxHealth()
+    {
+        return m_maxHealth;
+    }
+
+    public void IncreaseMaxHealth(float healthToAdd)
+    {
+        m_maxHealth = m_maxHealth + healthToAdd;
+
+        m_playerHUD.SetMaxHealthOnSlider(m_maxHealth);
     }
 
     // Function for despawning the enemy
