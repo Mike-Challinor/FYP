@@ -91,6 +91,12 @@ public class RoomContentGenerator : MonoBehaviour
             m_possibleTileLocations.Clear();
         }
 
+        // Reset the pillar location
+        if (m_pillarList.Count != 0)
+        {
+            m_pillarList.Clear();
+        }
+
         // Add all floor locations as possible positions
         foreach (Vector3Int position in m_floorLocations)
         {
@@ -172,8 +178,6 @@ public class RoomContentGenerator : MonoBehaviour
         // Check if is a side room
         if (m_isSideRoom || m_isLastRoom)
         {
-            Debug.LogError("Side room... setting altars to 4");
-
             // Always draw 4 altars on a side room
             amountToDraw = 4;
         }
@@ -406,8 +410,37 @@ public class RoomContentGenerator : MonoBehaviour
     private IEnumerator SetPillarLocations()
     {
         Debug.Log("Starting SetPillarLocations");
-        int numberOfPillars = RandomNumberGenerator(1, 2); // Set the number of pillars to 1 or 2
 
+        // Create a bool to handle whether there is a door on the top wall
+        bool hasDoor = false;
+
+        // Loop through all the door locations and see if it matches with the top wall position
+        foreach (Vector3Int doorLocation in m_doorLocations)
+        {
+            if (doorLocation.y == m_yLocation + m_height)
+            {
+                hasDoor = true;
+                break;
+            }
+
+        }
+
+        // Create int to hold the number of pillars
+        int numberOfPillars;
+
+        // Set the number of pillars based off of whether there is a door on the wall
+        if (hasDoor)
+        {
+            numberOfPillars = RandomNumberGenerator(1, 2); // Set the number of pillars to 1 or 2
+        }
+
+        else
+        {
+            numberOfPillars = 2; // Set the number of pillars to 2
+        }
+
+        
+        // Loop through and place pillars
         for (int i = 0; i < numberOfPillars; i++)
         {
             Debug.Log($"Placing Pillar {i + 1} of {numberOfPillars}");
@@ -447,22 +480,33 @@ public class RoomContentGenerator : MonoBehaviour
         int maxAttempts = 100;
         int attempts = 0;
 
-        // Loop for checking whether position needs to be re-rolled
-        while ((m_doorLocations.Any(location => location.x == xPosition) ||
-                m_doorLocations.Any(location => location.x + 1 == xPosition) ||
-                m_doorLocations.Any(location => location.x + 2 == xPosition) ||
-                m_doorLocations.Any(location => location.x + 3 == xPosition) ||
-                m_doorLocations.Any(location => location.x - 1 == xPosition) ||
-                m_pillarList.Any(location => location.x == xPosition)) &&
-                attempts < maxAttempts)
+        List<int> validPositions = new List<int>();
+        for (int i = m_xLocation + 1; i < m_xLocation + m_width - 1; i++)
         {
+            if (!m_doorLocations.Any(location => Mathf.Abs(location.x - i) <= 3) &&
+                !m_pillarList.Any(location => Mathf.Abs(location.x - i) <= 1))
+            {
+                validPositions.Add(i);
+            }
+        }
+        Debug.Log($"Valid X positions count: {validPositions.Count} - {string.Join(", ", validPositions)}");
+
+
+        // Loop for checking whether position needs to be re-rolled
+        while ((m_doorLocations.Any(location => Mathf.Abs(location.x - xPosition) <= 3) ||
+        m_pillarList.Any(location => Mathf.Abs(location.x - xPosition) <= 1)) &&
+        attempts < maxAttempts)
+        {
+            Debug.Log($"Attempt failed at xPos {xPosition} and yPos {yPosition}");
+
             xPosition = RandomNumberGenerator(m_xLocation + 1, m_xLocation + m_width - 1);
             attempts++;
         }
 
         if (attempts >= maxAttempts)
         {
-            Debug.LogError("Max attempts reached in PlaceFirstPillar while finding xPosition.");
+
+            Debug.LogError($"Max attempts reached in PlaceFirstPillar while finding xPosition. m_xLocation = {m_xLocation}");
             yield break;
         }
 
