@@ -116,4 +116,9 @@ public class RewardChest : MonoBehaviour
     {
         return m_isOpen;
     }
+
+    public void SetIsKey(bool isKey)
+    {
+        m_isKey = isKey;
+    }
 }

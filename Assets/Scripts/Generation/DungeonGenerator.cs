@@ -377,10 +377,8 @@ public class DungeonGenerator : MonoBehaviour
             // If the previous room has 3 doors
             else if (previousRoom.numberOfDoors == 3)
             {
-
                 if (m_maxNumberOfRooms - rooms.Count >= 1) // If more rooms are going to be needed
                 {
-
                     if (m_roomLocationsToGenerate.Count >= 1)
                     {
                         numberOfDoors = 1;

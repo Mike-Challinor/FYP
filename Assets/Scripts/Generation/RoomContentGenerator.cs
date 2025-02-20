@@ -51,6 +51,8 @@ public class RoomContentGenerator : MonoBehaviour
     public int m_minNumberOfRocks = 4;
     public int m_maxNumberOfRocks = 6;
 
+    [SerializeField] private GameObject m_rewardChestPrefab;
+
     private void Start()
     {
         m_altarTileData = new TileData()
@@ -175,16 +177,33 @@ public class RoomContentGenerator : MonoBehaviour
     {
         int amountToDraw;
 
-        // Check if is a side room
+        // Check if is a side room or the last room
         if (m_isSideRoom || m_isLastRoom)
         {
             // Always draw 4 altars on a side room
             amountToDraw = 4;
+
+            // Set position of altar in middle of the room
+            Vector3Int position = new Vector3Int();
+            position.x = Mathf.FloorToInt(m_xLocation + m_width * 0.5f);
+            position.y = Mathf.FloorToInt(m_yLocation + m_height * 0.5f);
+
+            Vector3 worldPos = m_propTileMapCollision.CellToWorld(position) + new Vector3(1f, -0.5f, 0);
+
+            // Spawn prefab in centre of the room
+            GameObject rewardChest = Instantiate(m_rewardChestPrefab, worldPos, transform.rotation);
+
+            // Set the chest to be a key chest if it is the last room
+            if (m_isLastRoom)
+            {
+                rewardChest.GetComponent<RewardChest>().SetIsKey(true);
+            }
+
         }
 
         else
         {
-            // Set the amount of wells in the scene between 1 and 4
+            // Set the amount of altars in the scene between 1 and 4
             amountToDraw = RandomNumberGenerator(1, 3);
         }
         
@@ -776,9 +795,7 @@ public class RoomContentGenerator : MonoBehaviour
                         m_possibleTileLocations.Remove(position);
                     }
 
-                    
                 }
-                
             }
 
             else
