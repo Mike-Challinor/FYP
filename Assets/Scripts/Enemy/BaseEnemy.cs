@@ -5,7 +5,7 @@ using System.Collections;
 public class BaseEnemy : MonoBehaviour
 {
     [SerializeField] private float m_moveSpeed = 1f;
-    [SerializeField] private float m_attackDamage = 5f;
+    [SerializeField] private float m_attackDamage = 10f;
     [SerializeField] private float m_attackRange = 3f;
     [SerializeField] private float m_attackDuration = 1f;
     [SerializeField] private float m_attackCooldown = 2f;
@@ -34,8 +34,12 @@ public class BaseEnemy : MonoBehaviour
         m_navMeshAgent.updateRotation = false;
         m_navMeshAgent.updateUpAxis = false;
 
-
         m_healthComponent.InitHealth(100);
+
+        if (Random.Range(0, 100) < 50)
+        {
+            FlipSprite();
+        }
     }
 
     // Update is called once per frame
@@ -47,7 +51,6 @@ public class BaseEnemy : MonoBehaviour
         // Look for a target if the enemy does not have one
         if (m_target == null)
         {
-            Debug.Log("ENEMY_CONTROLLER::UPDATE:: Enemy has no target..  Calling FindTarget() function...");
             FindTarget();
         }
         else
@@ -81,7 +84,6 @@ public class BaseEnemy : MonoBehaviour
                     // Initiate enemy attack if not already attacking
                     if (!m_isAttacking)
                     {
-                        Debug.Log("ENEMY_CONTROLLER::UPDATE:: Enemy is within range of target. Calling InitiateAttack Function...");
                         StartCoroutine(InitiateAttack());
                     }
                 }
@@ -98,45 +100,27 @@ public class BaseEnemy : MonoBehaviour
     // Function for finding the enemy's target
     private void FindTarget()
     {
-        Debug.Log("ENEMY_CONTROLLER::FINDTARGET:: Finding enemies target...");
-
         // Find the player and set as target
         m_target = GameObject.FindGameObjectWithTag("Player");
-
-        if (m_target != null)
-        {
-            Debug.Log("ENEMY_CONTROLLER::FINDTARGET:: Target found: " + m_target.name);
-        }
-        else
-        {
-            Debug.Log("ENEMY_CONTROLLER::FINDTARGET:: No valid targets found.");
-        }
     }
 
     // Begin attack which calls the attack timer
     private IEnumerator InitiateAttack()
     {
         m_isAttacking = true;
-        ChangeSpriteColour(Color.red);
-        Debug.Log("ENEMY_CONTROLLER::INITIATEATTACK:: Initiating attack. Calling attack timer..");
         yield return StartCoroutine(AttackTimer()); // Wait for attack timer to finish before continuing
-        Debug.Log("ENEMY_CONTROLLER::INITIATEATTACK:: Calling AttackTarget() function..");
         AttackTarget();
     }
 
     // Attack timer that signifies how long the attack/animation takes
     private IEnumerator AttackTimer()
     {
-        Debug.Log("ENEMY_CONTROLLER::ATTACKTIMER:: Function called. Waiting for attack duration");
         yield return new WaitForSeconds(m_attackDuration);
-        Debug.Log("ENEMY_CONTROLLER::ATTACKTIMER:: Attack timer ended.. attacking target");
     }
 
     // Attack the target once the timer has ended
     private void AttackTarget()
     {
-        Debug.Log("ENEMY_CONTROLLER::ATTACKTARGET:: Function called");
-
         // Define the attack area based on the collider's center
         Vector2 attackCenter = m_attackCollider.bounds.center;
         Vector2 attackSize = new Vector2(m_attackCollider.bounds.size.x, m_attackCollider.bounds.size.y);
@@ -156,8 +140,6 @@ public class BaseEnemy : MonoBehaviour
 
                 if (playerHealth != null)
                 {
-                    Debug.Log("ENEMYCONTROLLER::ATTACKTARGETRPC:: Applying damage to the player");
-
                     // Apply damage on the server
                     playerHealth.RemoveHealth(m_attackDamage);
 
@@ -165,7 +147,7 @@ public class BaseEnemy : MonoBehaviour
 
                 else
                 {
-                    Debug.Log("ENEMYCONTROLLER::ATTACKTARGETRPC:: Health component is null");
+                    Debug.LogError("ENEMYCONTROLLER::ATTACKTARGETRPC:: Health component is null");
                 }
             }
         }
@@ -177,8 +159,6 @@ public class BaseEnemy : MonoBehaviour
     // Timer for attack cooldown (time it takes between attacks)
     private IEnumerator AttackCooldown()
     {
-        Debug.Log("ENEMY_CONTROLLER::ATTACKCOOLDOWN:: Ending Attack!");
-        ChangeSpriteColour(Color.white); // Return sprite to white colour
         yield return new WaitForSeconds(m_attackCooldown);
         m_isAttacking = false;
     }
@@ -198,8 +178,6 @@ public class BaseEnemy : MonoBehaviour
         {
             m_attackCollider.offset = new Vector2(-Mathf.Abs(m_attackCollider.offset.x), m_attackCollider.offset.y);
         }
-
-        Debug.Log("ENEMYCONTROLLER::FLIPSPRITERPC:: Flipping enemy sprite");
     }
 
     // Debug function for drawing gizmos of the enemy's attack size
@@ -220,13 +198,6 @@ public class BaseEnemy : MonoBehaviour
         {
             Debug.LogWarning("m_attackCollider is null. Gizmos for attack area will not be drawn.");
         }
-    }
-
-
-    void ChangeSpriteColour(Vector4 colour)
-    {
-        m_enemySprite.color = colour;
-        Debug.Log("$ENEMYCONTROLLER::CHANGESPRITECOLOURRPC:: Colour of sprite changed to: " + colour);
     }
 
 }

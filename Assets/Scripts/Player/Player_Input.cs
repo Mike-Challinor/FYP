@@ -9,6 +9,7 @@ public class Player_Input : MonoBehaviour
     private Rigidbody2D m_RB;
     private Player_Controller m_playerController;
     private Vector3 m_firePointLocalPosition;
+    private bool m_canMove = false;
 
     [SerializeField] private float m_moveSpeed = 5f;
     [SerializeField] private GameObject m_firePoint;
@@ -26,7 +27,10 @@ public class Player_Input : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        MovePlayer();
+        if (m_canMove)
+        {
+            MovePlayer();
+        }
     }
 
     private void OnEnable()
@@ -79,6 +83,8 @@ public class Player_Input : MonoBehaviour
 
     private void InitiateAttack(InputAction.CallbackContext ctx)
     {
+        if (!m_canMove) { return; }
+
         if (m_playerController.GetCanAttack()) // Initiate attack if player can attack
         {
             Debug.Log("Initiate Attack!");
@@ -88,12 +94,16 @@ public class Player_Input : MonoBehaviour
 
     private void EndAttack(InputAction.CallbackContext ctx)
     {
+        if (!m_canMove) { return; }
+
         Debug.Log("End Attack!");
         m_playerController.EndAttack();
     }
 
     private void InteractWithObject(InputAction.CallbackContext ctx)
     {
+        if (!m_canMove) { return; }
+
         Debug.Log("Interact Called");
 
         if (m_playerController.GetInteractionStatus())
@@ -101,6 +111,11 @@ public class Player_Input : MonoBehaviour
             Debug.Log("Can Interact");
             m_playerController.Interact();
         }
+    }
+
+    public void SetCanMove(bool canMove)
+    {
+        m_canMove = canMove;
     }
 
 }

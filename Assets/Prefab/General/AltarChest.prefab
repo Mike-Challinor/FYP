@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7442428389198315741}
   m_Layer: 0
   m_Name: Chest
-  m_TagString: Untagged
+  m_TagString: Props
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -289,7 +289,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62c6daa520330364a9e18e73daa67baa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_openChestTile: {fileID: 21300040, guid: 29c9cded5e558164aaf8c9bf08aa1510, type: 3}
+  m_openChestSprite: {fileID: 21300040, guid: 29c9cded5e558164aaf8c9bf08aa1510, type: 3}
   m_isKey: 0
   m_isOpen: 0
   m_SR: {fileID: 6326986870806735964}

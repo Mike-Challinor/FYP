@@ -1,12 +1,11 @@
 using UnityEngine;
 
-public class RewardChest : MonoBehaviour
+public class RewardChest : InteractableObject
 {
     private float m_percentage = 8f;
 
-    [SerializeField] private Sprite m_openChestTile;
+    [SerializeField] private Sprite m_openChestSprite;
     [SerializeField] private bool m_isKey = false;
-    [SerializeField] private bool m_isOpen = false;
     [SerializeField] private SpriteRenderer m_SR;
 
     private Upgrade m_selectedUpgrade;
@@ -21,6 +20,9 @@ public class RewardChest : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // Set the type of the object
+        m_type = InteractableType.Chest;
+
         if (!m_isKey)
         {
             // Select a random Upgrade value directly
@@ -29,33 +31,15 @@ public class RewardChest : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    public override void Interact(Player_Controller controller)
     {
-        if (collision.CompareTag("Player") && !GetIsOpen())
-        {
-            Player_Controller controller = collision.GetComponent<Player_Controller>();
-            controller.SetInteractionStatus(true, gameObject);
-        }
+        GetReward(controller);
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
+    private void GetReward(Player_Controller controller)
     {
-        if (collision.CompareTag("Player"))
-        {
-            Player_Controller controller = collision.GetComponent<Player_Controller>();
-
-            if (controller.GetInteractionStatus())
-            {
-                controller.SetInteractionStatus(false, null);
-            }
-            
-        }
-    }
-
-    public void GetReward(Player_Controller controller)
-    {
-        if (m_isOpen) return;
-        m_isOpen = true;
+        if (base.m_isOpen) return;
+        base.m_isOpen = true;
 
         // If the interaction status is true then set it to false
         if (controller.GetInteractionStatus())
@@ -64,7 +48,7 @@ public class RewardChest : MonoBehaviour
         }
 
         // Open the chest (change the sprite)
-        m_SR.sprite = m_openChestTile;
+        m_SR.sprite = m_openChestSprite;
 
         if (m_isKey)
         {
@@ -110,11 +94,6 @@ public class RewardChest : MonoBehaviour
         Debug.Log("Increased Shoot Speed by " + m_percentage + "%!");
         // Logic to increase player's shoot speed
         controller.DecreaseAttackTimer(m_percentage);
-    }
-
-    public bool GetIsOpen()
-    {
-        return m_isOpen;
     }
 
     public void SetIsKey(bool isKey)

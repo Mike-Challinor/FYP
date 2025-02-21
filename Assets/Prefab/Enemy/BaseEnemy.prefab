@@ -81,7 +81,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 5
   m_Sprite: {fileID: 6019453725058403666, guid: 17ad871e168e8614aa33af7bd39e6f63, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -127,8 +127,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.020743757, y: -0.036123633}
-  m_Size: {x: 0.6812995, y: 1.3644192}
+  m_Offset: {x: 0.020743757, y: -0.089053154}
+  m_Size: {x: 0.6812995, y: 1.4702783}
   m_Direction: 0
 --- !u!50 &4816145422742972214
 Rigidbody2D:
@@ -170,9 +170,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_moveSpeed: 1
-  m_attackDamage: 5
+  m_attackDamage: 10
   m_attackRange: 2
-  m_attackDuration: 1
+  m_attackDuration: 0.3
   m_attackCooldown: 2
   m_aggroRange: 10
   m_target: {fileID: 0}
@@ -192,6 +192,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_maxHealth: 150
   m_currentHealth: 0
+  m_playerHUD: {fileID: 0}
 --- !u!195 &-6814473434120718334
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -280,7 +281,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.2955172, y: -0.07500435}
+  m_Offset: {x: -0.514024, y: 0.24235079}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -290,5 +291,5 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.5769754, y: 0.4959705}
+  m_Size: {x: 1.013989, y: 1.1306806}
   m_EdgeRadius: 0

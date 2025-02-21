@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Projectile : MonoBehaviour
 {
-    [SerializeField] private float m_projectileSpeed = 36f;
+    [SerializeField] private float m_projectileSpeed = 150f;
     [SerializeField] private float m_damage = 40f;
     [SerializeField] private float m_lifespan = 4f;
     private Rigidbody2D m_RB;
@@ -28,6 +28,12 @@ public class Projectile : MonoBehaviour
         if (collision.gameObject.CompareTag("Walls"))
         {
             Debug.Log("Projectile collided with wall!");
+            DestroyProjectile();
+        }
+
+        else if (collision.gameObject.CompareTag("Props"))
+        {
+            Debug.Log("Projectile collided with Prop!");
             DestroyProjectile();
         }
 
