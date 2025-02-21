@@ -33,17 +33,22 @@ public class RoomContentGenerator : MonoBehaviour
     public int m_xLocation;
     public int m_yLocation;
 
-    // Room settings
+    // Object positions
     public List<Vector3Int> m_doorLocations;
     public List<Vector3Int> m_wallLocations;
     public List<Vector3Int> m_floorLocations;
+    public List<Vector3Int> m_objectLocations;
+    private HashSet<Vector3Int> m_usedPositions = new HashSet<Vector3Int>();
     public List<Vector3Int> m_possibleTileLocations = new List<Vector3Int>();
     private List<Vector3Int> m_alterList = new List<Vector3Int>();
     private List<Vector3Int> m_pillarList = new List<Vector3Int>();
+
+    // Room settings
     public bool m_isSideRoom;
     public bool m_isLastRoom;
+    public int m_roomCount = 1;
 
-    // Generator settingsfor each
+    // Generator settings
     public float m_drawTime = 0.0f;
     public bool m_isDrawing = false;
     public bool m_useTimer = true;
@@ -51,7 +56,9 @@ public class RoomContentGenerator : MonoBehaviour
     public int m_minNumberOfRocks = 4;
     public int m_maxNumberOfRocks = 6;
 
+    // Prefabs
     [SerializeField] private GameObject m_rewardChestPrefab;
+    [SerializeField] private GameObject m_enemyPrefab;
 
     private void Start()
     {
@@ -68,7 +75,16 @@ public class RoomContentGenerator : MonoBehaviour
 
     }
 
-    public void GenerateRoom(int width, int height, int xLocation, int yLocation, List<Vector3Int> doorLocations, List<Vector3Int> wallLocations, List<Vector3Int> floorLocations, bool isSideRoom, bool isLastRoom)
+    public void GenerateRoom(
+        int width, 
+        int height, 
+        int xLocation, 
+        int yLocation, 
+        List<Vector3Int> doorLocations, 
+        List<Vector3Int> wallLocations, 
+        List<Vector3Int> floorLocations, 
+        bool isSideRoom, 
+        bool isLastRoom)
     {
         // Ensure the game is running
         if (!Application.isPlaying)
@@ -86,6 +102,11 @@ public class RoomContentGenerator : MonoBehaviour
         m_floorLocations = floorLocations;
         m_isSideRoom = isSideRoom;
         m_isLastRoom = isLastRoom;
+
+        if (!isSideRoom)
+        {
+            m_roomCount++;
+        }
 
         // Reset possible tile locations
         if (m_possibleTileLocations.Count != 0)
@@ -153,14 +174,26 @@ public class RoomContentGenerator : MonoBehaviour
         // Set the altars in the scene
         yield return SetAltarLocations();
 
+        // Register altar positions
+        RegisterObjectPositions(m_alterList);
+
         // Set the pillars in the scene
         yield return SetPillarLocations();
+
+        // Register pillar positions
+        RegisterObjectPositions(m_pillarList);
 
         // Set the objects in the scene
         yield return SetObjectLocations();
 
+        // Register object positions
+        RegisterObjectPositions(m_objectLocations);
+
         // Set the rocks in the scene
         yield return SetRockLocations();
+
+        // Spawns all the enemies
+        yield return SpawnEnemies();
 
         // Wait for timer before finishing drawing
         yield return DrawTimer();
@@ -187,6 +220,8 @@ public class RoomContentGenerator : MonoBehaviour
             Vector3Int position = new Vector3Int();
             position.x = Mathf.FloorToInt(m_xLocation + m_width * 0.5f);
             position.y = Mathf.FloorToInt(m_yLocation + m_height * 0.5f);
+
+            m_alterList.Add(position);
 
             Vector3 worldPos = m_propTileMapCollision.CellToWorld(position) + new Vector3(1f, -0.5f, 0);
 
@@ -500,6 +535,7 @@ public class RoomContentGenerator : MonoBehaviour
         int attempts = 0;
 
         List<int> validPositions = new List<int>();
+
         for (int i = m_xLocation + 1; i < m_xLocation + m_width - 1; i++)
         {
             if (!m_doorLocations.Any(location => Mathf.Abs(location.x - i) <= 3) &&
@@ -663,6 +699,10 @@ public class RoomContentGenerator : MonoBehaviour
                         m_possibleTileLocations.Remove(tempPosition);
                         m_possibleTileLocations.Remove(tempPosition2);
 
+                        m_objectLocations.Add(position);
+                        m_objectLocations.Add(tempPosition);
+                        m_objectLocations.Add(tempPosition2);
+
                         placed = true;
                     }
 
@@ -674,6 +714,9 @@ public class RoomContentGenerator : MonoBehaviour
 
                         m_possibleTileLocations.Remove(position);
                         m_possibleTileLocations.Remove(tempPosition);
+
+                        m_objectLocations.Add(position);
+                        m_objectLocations.Add(tempPosition);
 
                         placed = true;
 
@@ -713,6 +756,10 @@ public class RoomContentGenerator : MonoBehaviour
                         m_possibleTileLocations.Remove(tempPosition);
                         m_possibleTileLocations.Remove(tempPosition2);
 
+                        m_objectLocations.Add(position);
+                        m_objectLocations.Add(tempPosition);
+                        m_objectLocations.Add(tempPosition2);
+
                         placed = true;
                     }
 
@@ -724,6 +771,9 @@ public class RoomContentGenerator : MonoBehaviour
 
                         m_possibleTileLocations.Remove(position);
                         m_possibleTileLocations.Remove(tempPosition);
+
+                        m_objectLocations.Add(position);
+                        m_objectLocations.Add(tempPosition);
 
                         placed = true;
 
@@ -761,6 +811,10 @@ public class RoomContentGenerator : MonoBehaviour
                     m_possibleTileLocations.Remove(tempPosition);
                     m_possibleTileLocations.Remove(tempPosition2);
 
+                    m_objectLocations.Add(position);
+                    m_objectLocations.Add(tempPosition);
+                    m_objectLocations.Add(tempPosition2);
+
                     placed = true;
                 }
 
@@ -778,6 +832,7 @@ public class RoomContentGenerator : MonoBehaviour
                         m_propTileMapCollision.SetTile(position, chosenTile);
 
                         m_possibleTileLocations.Remove(position);
+                        m_objectLocations.Add(position);
 
                         placed = true;
 
@@ -910,6 +965,93 @@ public class RoomContentGenerator : MonoBehaviour
                 }
             }
         }
+    }
+
+    private IEnumerator SpawnEnemies()
+    {
+        int enemiesToSpawn;
+
+        // Determine the number of enemies to spawn
+        if (m_isSideRoom)
+        {
+            // Spawn 5 enemies in the side room
+            enemiesToSpawn = 5;
+        }
+        else
+        {
+            // Set number of enemies to spawn with linear scaling and a clamp
+            enemiesToSpawn = Mathf.Clamp(Mathf.FloorToInt(m_roomCount * 1.5f), 2, 10);
+
+
+
+        }
+
+        // Ensure available floor positions is not exceeded
+        enemiesToSpawn = Mathf.Min(enemiesToSpawn, m_floorLocations.Count - m_usedPositions.Count);
+
+        // Loop through and spawn enemies
+        for (int i = 0; i < enemiesToSpawn; i++)
+        {
+            // Get a unique random position
+            Vector3Int position = GetUniqueRandomPosition();
+
+            if (position != Vector3Int.zero) // Ensure we got a valid position
+            {
+                SpawnEnemy(position);
+                m_usedPositions.Add(position); // Mark position as used
+            }
+        }
+
+        // Wait for draw tiemr
+        if (m_useTimer) { yield return StartCoroutine(DrawTimer()); }
+    }
+
+    public void RegisterObjectPositions(List<Vector3Int> objectPositions)
+    {
+        foreach (var pos in objectPositions)
+        {
+            m_usedPositions.Add(pos); // Mark object positions as occupied
+        }
+    }
+
+    private Vector3Int GetUniqueRandomPosition()
+    {
+        // Store list of available positions that haven't been used and are valid
+        List<Vector3Int> availablePositions = m_floorLocations
+            .FindAll(pos => !m_usedPositions.Contains(pos) && IsPositionValid(pos));
+
+        // No valid positions left
+        if (availablePositions.Count == 0)
+        {
+            Debug.LogWarning("No available positions left to spawn enemies!");
+            return Vector3Int.zero;
+        }
+
+        // Remove bottom rows from available positions
+        availablePositions = availablePositions
+            .FindAll(pos => pos.y > m_yLocation + 3);
+
+        // Check again in case all valid positions were removed
+        if (availablePositions.Count == 0)
+        {
+            Debug.LogWarning("All available positions were removed due to bottom row removal!");
+            return Vector3Int.zero;
+        }
+
+        // Select a random valid position
+        return availablePositions[Random.Range(0, availablePositions.Count)];
+    }
+
+
+
+    private void SpawnEnemy(Vector3Int position)
+    {
+        // Spawn enemy logic
+        Debug.Log($"Spawning enemy at {position}");
+
+        Vector3 worldPos = m_propTileMapCollision.CellToWorld(position);
+
+        Instantiate(m_enemyPrefab, worldPos, Quaternion.identity);
     }
 
     private bool IsPositionValid(Vector3Int position)

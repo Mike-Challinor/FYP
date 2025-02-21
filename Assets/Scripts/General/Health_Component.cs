@@ -38,7 +38,11 @@ public class Health_Component : MonoBehaviour
             m_currentHealth = m_currentHealth - healthToRemove;
         }
 
-        m_playerHUD.SetCurrentHealthOnSlider(m_currentHealth);
+
+        if (m_playerHUD != null)
+        {
+            m_playerHUD.SetCurrentHealthOnSlider(m_currentHealth);
+        }
     }
 
     public float GetHealth()

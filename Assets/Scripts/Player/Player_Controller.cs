@@ -5,7 +5,9 @@ public class Player_Controller : MonoBehaviour
 {
     [SerializeField] private GameObject m_playerCam;
     [SerializeField] private GameObject m_player;
-    [SerializeField] private Player_HUD m_playerHUD;
+    [SerializeField] private GameObject m_playerHUD;
+    [SerializeField] private Player_HUD m_playerHUDScript;
+    [SerializeField] private Player_Input m_playerInput;
     [SerializeField] private bool m_isAttacking = false;
     [SerializeField] private bool m_canAttack = true;
     [SerializeField] private bool m_canInteract = false;
@@ -29,7 +31,8 @@ public class Player_Controller : MonoBehaviour
         m_healthComponent = GetComponent<Health_Component>();
         m_healthComponent.InitHealth(m_maxHealth);
         m_RB = GetComponent<Rigidbody2D>();
-        m_playerHUD.InitHUD(m_maxHealth);
+        m_playerInput = GetComponent<Player_Input>();
+        m_playerHUDScript.InitHUD(m_maxHealth);
     }
 
     void FixedUpdate()
@@ -139,7 +142,23 @@ public class Player_Controller : MonoBehaviour
 
     public void Interact()
     {
-        m_interactableObject.GetComponent<RewardChest>().GetReward(this);
+        InteractableObject interactableObject = m_interactableObject.GetComponent<InteractableObject>();
+
+        // If the object is a door
+        if (interactableObject.GetObjectType() == InteractableObject.InteractableType.Door)
+        {
+            // Check key count
+            if (m_keyCount < 2)
+            {
+                // If the player does not have enough keys then inform the player that the door is locked and do not interact
+                m_playerHUDScript.SetObtainedText("Door is locked");
+                return;
+            }
+
+            m_playerHUDScript.SetObtainedText("Door unlocked");
+        }
+
+        m_interactableObject.GetComponent<InteractableObject>().Interact(this);
     }
 
     public void SetInteractionStatus(bool canInteract, GameObject interactObject)
@@ -149,12 +168,12 @@ public class Player_Controller : MonoBehaviour
 
         if (m_canInteract)
         {
-            m_playerHUD.ShowInteractText(true);
+            m_playerHUDScript.ShowInteractText(true);
         }
 
         else
         {
-            m_playerHUD.ShowInteractText(false);
+            m_playerHUDScript.ShowInteractText(false);
         }
     }
 
@@ -166,6 +185,8 @@ public class Player_Controller : MonoBehaviour
     public void AddKey()
     {
         m_keyCount++;
+        m_playerHUDScript.SetKeyText(m_keyCount);
+        m_playerHUDScript.SetObtainedText("Key obtained");
     }
     public int GetKeyCount()
     {
@@ -183,6 +204,9 @@ public class Player_Controller : MonoBehaviour
 
         // Remove percentage from the attack timer
         m_attackTimer = m_attackTimer - amountToRemove;
+
+        // Update UI
+        m_playerHUDScript.SetObtainedText($"Attack Speed increased");
     }
 
     public void IncreaseMaxHealth(float percentage)
@@ -195,6 +219,9 @@ public class Player_Controller : MonoBehaviour
 
         // Remove percentage from the max health on health component
         m_healthComponent.IncreaseMaxHealth(amountToAdd);
+
+        // Update UI
+        m_playerHUDScript.SetObtainedText($"Health increased");
     }
     public void IncreaseDamage(float percentage)
     {
@@ -206,6 +233,27 @@ public class Player_Controller : MonoBehaviour
 
         // Remove percentage amount from the damage float
         m_attackDamage = m_attackDamage + amountToAdd;
+
+        // Update UI
+        m_playerHUDScript.SetObtainedText($"Damage increased");
+    }
+
+    public void SetCanMove(bool canMove)
+    {
+        m_playerInput.SetCanMove(canMove);
+    }
+
+    public void SetHUDStatus(bool status)
+    {
+        if (status)
+        {
+            m_playerHUD.SetActive(true);
+        }
+
+        else
+        {
+            m_playerHUD.SetActive(false);
+        }
     }
 
 }
