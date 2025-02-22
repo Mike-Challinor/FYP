@@ -133,6 +133,7 @@ public class Player_Controller : MonoBehaviour
         {
             m_playerCam = playerCamera;
             playerCamera.GetComponent<FollowCamera>().InitCamera(this.transform);
+            playerCamera.GetComponent<Camera>().fieldOfView = 71;
         }
         else
         {

@@ -5,10 +5,8 @@ public class Player_Input : MonoBehaviour
 {
     private PlayerInputActions m_playerActions;
     private Vector2 m_moveInput;
-    private SpriteRenderer m_playerSprite;
     private Rigidbody2D m_RB;
     private Player_Controller m_playerController;
-    private Vector3 m_firePointLocalPosition;
     private bool m_canMove = false;
 
     [SerializeField] private float m_moveSpeed = 5f;
@@ -19,9 +17,7 @@ public class Player_Input : MonoBehaviour
     void Start()
     {
         m_RB = GetComponent<Rigidbody2D>();
-        m_playerSprite = GetComponent<SpriteRenderer>();
         m_playerController = GetComponent<Player_Controller>();
-        m_firePointLocalPosition = m_firePoint.transform.localPosition;
     }
 
     // Update is called once per frame

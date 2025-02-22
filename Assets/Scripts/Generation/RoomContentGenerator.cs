@@ -238,8 +238,8 @@ public class RoomContentGenerator : MonoBehaviour
 
         else
         {
-            // Set the amount of altars in the scene between 1 and 4
-            amountToDraw = RandomNumberGenerator(1, 3);
+            // Set the amount of altars in the scene between 2 and 4
+            amountToDraw = RandomNumberGenerator(2, 3);
         }
         
 
@@ -747,7 +747,7 @@ public class RoomContentGenerator : MonoBehaviour
                 if (m_possibleTileLocations.Contains(tempPosition))
                 {
                     // If the below tile is also free
-                    if (m_possibleTileLocations.Contains(tempPosition))
+                    if (m_possibleTileLocations.Contains(tempPosition2))
                     {
                         var chosenTile = m_objectTileArrayThreeHeightRight[Random.Range(0, m_objectTileArrayThreeHeightRight.Length)];
                         m_propTileMapCollision.SetTile(position, chosenTile);
@@ -777,15 +777,16 @@ public class RoomContentGenerator : MonoBehaviour
 
                         placed = true;
 
-                        // If the item placed is the box, place an item (vase) on top (50% chance)
-                        if (chosenTile == m_boxTile && Random.Range(0, 100) < 50)
+                        // If the item placed is the box, place an item (vase) on top (70% chance)
+                        if (chosenTile == m_boxTile)
                         {
-                            chosenTile = m_objectTileArrayPlace[Random.Range(0, m_objectTileArrayPlace.Length)];
-                            m_propTileMapCollision.SetTile(tempPosition, chosenTile);
+                            if (Random.Range(0, 100) < 70)
+                            {
+                                chosenTile = m_objectTileArrayPlace[Random.Range(0, m_objectTileArrayPlace.Length)];
+                                m_propTileMapCollision.SetTile(tempPosition, chosenTile);
+                            }
                         }
-
                     }
-
                 }
 
                 // Invalid tile position
@@ -981,9 +982,6 @@ public class RoomContentGenerator : MonoBehaviour
         {
             // Set number of enemies to spawn with linear scaling and a clamp
             enemiesToSpawn = Mathf.Clamp(Mathf.FloorToInt(m_roomCount * 1.5f), 2, 10);
-
-
-
         }
 
         // Ensure available floor positions is not exceeded
@@ -1030,6 +1028,18 @@ public class RoomContentGenerator : MonoBehaviour
         // Remove bottom rows from available positions
         availablePositions = availablePositions
             .FindAll(pos => pos.y > m_yLocation + 3);
+
+        // Remove bottom rows from available positions
+        availablePositions = availablePositions
+            .FindAll(pos => pos.y < m_yLocation + m_height - 3);
+
+        // Remove bottom rows from available positions
+        availablePositions = availablePositions
+            .FindAll(pos => pos.x > m_xLocation + 2);
+
+        // Remove bottom rows from available positions
+        availablePositions = availablePositions
+            .FindAll(pos => pos.x < m_xLocation + m_width - 2);
 
         // Check again in case all valid positions were removed
         if (availablePositions.Count == 0)
